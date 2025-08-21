@@ -18,6 +18,6 @@ st.sidebar.success("Select a demo above.")
 
 st.markdown(
     """
-    Grazie a questa App, avrai tutto quello che servirà per fare l'asta perfetta
+    In questa App troverai tutto il necessario per fare l'asta perfetta
 """
 )
