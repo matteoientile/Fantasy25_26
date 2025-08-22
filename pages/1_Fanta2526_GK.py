@@ -78,7 +78,7 @@ for metric in metrics:
     # Update layout
     fig.update_layout(
         height=500, width=1200,
-        title=f"{metric} - Portieri 2022 to 2024",
+        title=f"{metric} - Portieri 2022-2024",
         showlegend=False
     )
 
