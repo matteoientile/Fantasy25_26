@@ -50,7 +50,7 @@ for metric in metrics:
             df,
             y=metric,
             points="all",
-            hover_data=["Nome", "Pv"]
+            hover_data=["Nome", "Squadra" , "Pv"]
         )
         for trace in box.data:
             fig.add_trace(trace, row=1, col=col)
