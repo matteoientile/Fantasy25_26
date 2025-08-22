@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from plotly.subplots import make_subplots
 from dash import Dash, dcc, html, Input, Output
 
-st.title("📊 Fantacalcio Analysis App")
+st.title("📊 Fantacalcio 25/26 - Asta Statistica")
 
 st.write("# Fantacalcio 25/26 - Asta Statistica")
 
