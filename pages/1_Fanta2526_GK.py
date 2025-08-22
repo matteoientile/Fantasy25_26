@@ -10,9 +10,9 @@ In questa sezione analizziamo le performance dei portieri nelle ultime 3 stagion
 """)
 
 #---------------- READ FILES
-df2022 = pd.read_excel(r"2022_23_Merged.xlsx")
-df2023 = pd.read_excel(r"2023_24_Merged.xlsx")
-df2024 = pd.read_excel(r"2024_25_Merged.xlsx")
+df2022 = pd.read_excel("2022_23_Merged.xlsx")
+df2023 = pd.read_excel("2023_24_Merged.xlsx")
+df2024 = pd.read_excel("2024_25_Merged.xlsx")
 
 drop_columns = ["Id", "id", "goals", "assists", "yellow_cards", "red_cards", "matched"]
 df2022 = df2022.drop(drop_columns, axis=1)
@@ -26,6 +26,9 @@ df2024 = df2024[df2024["Pv"] > 1]
 gk2022 = df2022[df2022["R"] == "P"]
 gk2023 = df2023[df2023["R"] == "P"]
 gk2024 = df2024[df2024["R"] == "P"]
+
+#------------------------- SEARCH BOX
+search_name = st.text_input("Cerca un giocatore", "")
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot dei portieri")
@@ -77,6 +80,64 @@ for metric in metrics:
     )
     st.plotly_chart(fig, use_container_width=True)
 
+#========================= SECTION 2: REGRESSION =========================
+st.header("📈 Scatter xG+xA vs G+A")
+
+# Create scatter plots with trendline for each year
+for year, df in zip([2022, 2023, 2024], [gk2022, gk2023, gk2024]):
+    st.subheader(f"{year}")
+    fig = px.scatter(
+        df,
+        x="xG + xA (pts converted)",
+        y="G + A (pts converted)",
+        trendline="ols",
+        hover_name="Nome",
+        hover_data=["Squadra", "Pv"]
+    )
+
+    # Highlight searched player
+    if search_name:
+        highlight = df[df["Nome"].str.contains(search_name, case=False)]
+        if not highlight.empty:
+            fig.add_trace(
+                px.scatter(
+                    highlight,
+                    x="xG + xA (pts converted)",
+                    y="G + A (pts converted)",
+                    hover_name="Nome"
+                ).update_traces(
+                    marker=dict(size=15, color="red", symbol="star")
+                ).data[0]
+            )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+#========================= SECTION 3: OTHER METRICS =========================
+st.header("⚡ Altre metriche")
+
+for year, df in zip([2022, 2023, 2024], [gk2022, gk2023, gk2024]):
+    st.subheader(f"{year} - Distribuzione xBonus")
+    fig = px.histogram(
+        df,
+        x="xBonus",
+        nbins=20,
+        hover_data=["Nome", "Squadra", "Pv"]
+    )
+    # Highlight searched player
+    if search_name:
+        highlight = df[df["Nome"].str.contains(search_name, case=False)]
+        if not highlight.empty:
+            fig.add_trace(
+                px.scatter(
+                    highlight,
+                    x="xBonus",
+                    y=[0]*len(highlight),  # place marker at bottom of histogram
+                    hover_name="Nome"
+                ).update_traces(
+                    marker=dict(size=15, color="red", symbol="star")
+                ).data[0]
+            )
+    st.plotly_chart(fig, use_container_width=True)
 
 
 
