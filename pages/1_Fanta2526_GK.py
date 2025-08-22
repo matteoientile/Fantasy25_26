@@ -31,7 +31,7 @@ gk2024 = df2024[df2024["R"] == "P"]
 search_name = st.text_input("Cerca un giocatore", "")
 
 #========================= SECTION 1: BOX PLOTS =========================
-st.header("📊 Boxplot dei portieri")
+st.header("📊 Boxplot Portieri")
 
 metrics = ["Mv", "Fm", "Gs"]
 for metric in metrics:
