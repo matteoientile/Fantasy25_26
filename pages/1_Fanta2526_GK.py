@@ -27,15 +27,12 @@ gk2022 = df2022[df2022["R"] == "P"]
 gk2023 = df2023[df2023["R"] == "P"]
 gk2024 = df2024[df2024["R"] == "P"]
 
-#------------------------- GOALKEEPERS BOX PLOTS
-# --- Search box ---
-search_name = st.text_input("Cerca un giocatore", "")
+#========================= SECTION 1: BOX PLOTS =========================
+st.header("📊 Boxplot dei portieri")
 
-# --- Metrics to visualize ---
 metrics = ["Mv", "Fm", "Gs"]
-
 for metric in metrics:
-    st.subheader(f"📊 {metric} - Boxplot 2022-2024")
+    st.subheader(f"{metric} - Boxplot 2022-2024")
     
     fig = make_subplots(
         rows=1, cols=3,
@@ -43,14 +40,13 @@ for metric in metrics:
         horizontal_spacing=0.15
     )
 
-    # Function to add boxplot + highlight
     def add_boxplot(fig, df, col):
         # Base boxplot
         box = px.box(
             df,
             y=metric,
             points="all",
-            hover_data=["Nome", "Squadra" , "Pv"]
+            hover_data=["Nome", "Squadra", "Pv"]
         )
         for trace in box.data:
             fig.add_trace(trace, row=1, col=col)
@@ -70,18 +66,15 @@ for metric in metrics:
                     row=1, col=col
                 )
 
-    # Add plots for each year
     add_boxplot(fig, gk2022, col=1)
     add_boxplot(fig, gk2023, col=2)
     add_boxplot(fig, gk2024, col=3)
 
-    # Update layout
     fig.update_layout(
         height=500, width=1200,
         title=f"{metric} - Portieri 2022-2024",
         showlegend=False
     )
-
     st.plotly_chart(fig, use_container_width=True)
 
 
