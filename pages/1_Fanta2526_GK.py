@@ -123,7 +123,7 @@ for col, df, year in zip([1, 2, 3], [gk2022, gk2023, gk2024], [2022, 2023, 2024]
             )
 
 fig.update_layout(
-    height=500, width=1200,
+    height=500, width=1600,
     showlegend=False,
     title="📈 Mv vs Gs - Portieri 2022-2024"
 )
