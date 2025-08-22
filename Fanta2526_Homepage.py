@@ -7,10 +7,7 @@ import matplotlib.pyplot as plt
 from plotly.subplots import make_subplots
 from dash import Dash, dcc, html, Input, Output
 
-st.set_page_config(
-    page_title="Fantacalcio 25/26 - Asta Statistica",
-    page_icon="👋",
-)
+st.title("📊 Fantacalcio Analysis App")
 
 st.write("# Fantacalcio 25/26 - Asta Statistica")
 
