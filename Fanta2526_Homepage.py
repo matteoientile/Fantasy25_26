@@ -14,21 +14,18 @@ st.markdown("""
 
 Smettila di scorrere listoni interminabili, consumare decine di video pieni di bias ed opinioni personali: **qui parlano i numeri**.
 
-Tramite la barra a lato, potrai spulciare tutte le statistiche relative alle 3 precedenti stagioni di Serie A.
-
 **Non capisci nulla di statistica?** --> Non c'è problema, per ogni grafico avrai di fianco la spiegazione, sulla base della quale potrai prendere le tue scelte in fase d'asta!
 
+Tramite la barra a lato avrai a disposizione le più importanti informazioni su 
+- 🧤 Portieri  
+- 🛡️ Difensori  
+- ⚽ Centrocampisti  
+- 🎯 Attaccanti
+relative alle 3 precedenti stagioni di Serie A. 
 
-Use the sidebar to explore:
-- 🧤 Goalkeepers  
-- 🛡️ Defenders  
-- ⚽ Midfielders  
-- 🎯 Forwards  
-
-Each page contains interactive visualizations with tooltips and a search option to highlight players.
 """)
 
-st.sidebar.success("Select a demo above.")
+st.sidebar.success("Scegli il Ruolo")
 
 
 
