@@ -18,7 +18,7 @@ Medie, FantaMedie, Overperformance, Underperformance e chi più ne ha più ne me
 - ⚽ **Centrocampisti**  
 - 🎯 **Attaccanti**
 
-Basati sulle **ultime 3 stagioni di Serie aaaaaaaaaa**.
+Basati sulle **ultime 3 stagioni di Serie A**.
 """)
 
 
