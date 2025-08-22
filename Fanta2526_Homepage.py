@@ -1,4 +1,8 @@
 import streamlit as st
+st.set_page_config(
+    page_title="Fantacalcio 25/26",
+    layout="wide"   # <--- this makes the app use the full browser width
+)
 
 st.title("📊 Fantacalcio 25/26 - Asta Statistica")
 
