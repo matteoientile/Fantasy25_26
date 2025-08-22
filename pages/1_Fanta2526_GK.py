@@ -85,12 +85,17 @@ for metric in metrics:
     st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 2: REGRESSION =========================
-st.header("📈 Correlazioni Coppie di Variabili")
+st.header("📈 Correlazioni Coppie di Variabili (Mv vs Gs)")
 
-# Create scatter plots with trendline for each year
-for year, df in zip([2022, 2023, 2024], [gk2022, gk2023, gk2024]):
-    st.subheader(f"{year}")
-    fig = px.scatter(
+fig = make_subplots(
+    rows=1, cols=3,
+    subplot_titles=("2022", "2023", "2024"),
+    horizontal_spacing=0.1
+)
+
+for col, df, year in zip([1, 2, 3], [gk2022_filtered, gk2023_filtered, gk2024_filtered], [2022, 2023, 2024]):
+    # Base scatter + trendline
+    scatter = px.scatter(
         df,
         x="Mv",
         y="Gs",
@@ -98,6 +103,8 @@ for year, df in zip([2022, 2023, 2024], [gk2022, gk2023, gk2024]):
         hover_name="Nome",
         hover_data=["Squadra", "Pv"]
     )
+    for trace in scatter.data:
+        fig.add_trace(trace, row=1, col=col)
 
     # Highlight searched player
     if search_name:
@@ -111,10 +118,17 @@ for year, df in zip([2022, 2023, 2024], [gk2022, gk2023, gk2024]):
                     hover_name="Nome"
                 ).update_traces(
                     marker=dict(size=15, color="red", symbol="star")
-                ).data[0]
+                ).data[0],
+                row=1, col=col
             )
 
-    st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(
+    height=500, width=1200,
+    showlegend=False,
+    title="📈 Mv vs Gs - Portieri 2022-2024"
+)
+
+st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 3: OTHER METRICS =========================
 st.header("⚡ Altre metriche")
