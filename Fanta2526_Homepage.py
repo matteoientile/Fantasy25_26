@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit as st
 
 st.title("📊 Fantacalcio 25/26 - Asta Statistica")
 
