@@ -88,8 +88,8 @@ for year, df in zip([2022, 2023, 2024], [gk2022, gk2023, gk2024]):
     st.subheader(f"{year}")
     fig = px.scatter(
         df,
-        x="xG + xA (pts converted)",
-        y="G + A (pts converted)",
+        x="Mv",
+        y="Gs",
         trendline="ols",
         hover_name="Nome",
         hover_data=["Squadra", "Pv"]
@@ -102,8 +102,8 @@ for year, df in zip([2022, 2023, 2024], [gk2022, gk2023, gk2024]):
             fig.add_trace(
                 px.scatter(
                     highlight,
-                    x="xG + xA (pts converted)",
-                    y="G + A (pts converted)",
+                    x="Mv",
+                    y="Gs",
                     hover_name="Nome"
                 ).update_traces(
                     marker=dict(size=15, color="red", symbol="star")
