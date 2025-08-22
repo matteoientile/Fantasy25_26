@@ -25,7 +25,6 @@ df2023 = df2023.drop(drop_columns, axis=1)
 df2024 = df2024.drop(drop_columns, axis=1)
 
 #------------------------- PV FILTER
-# --- Pv filter ---
 min_pv = st.slider("Minimo partite giocate (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
 
 df2022 = df2022[df2022["Pv"] >= min_pv]
@@ -90,7 +89,7 @@ for metric in metrics:
     st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 2: REGRESSION =========================
-st.header("📈 Correlazioni Coppie di Variabili (Mv vs Gs)")
+st.header("📈 Correlazioni Coppie di Variabili")
 
 fig = make_subplots(
     rows=1, cols=3,
@@ -140,6 +139,58 @@ fig.update_xaxes(title_text="Mv", row=1, col=3)
 fig.update_yaxes(title_text="Gs", row=1, col=1)
 fig.update_yaxes(title_text="Gs", row=1, col=2)
 fig.update_yaxes(title_text="Gs", row=1, col=3)
+st.plotly_chart(fig, use_container_width=True)
+
+fig = make_subplots(
+    rows=1, cols=3,
+    subplot_titles=("2022", "2023", "2024"),
+    horizontal_spacing=0.1
+)
+
+for col, df, year in zip([1, 2, 3], [gk2022, gk2023, gk2024], [2022, 2023, 2024]):
+    # Base scatter + trendline
+    scatter = px.scatter(
+        df,
+        x="Mv",
+        y="Fm",
+        trendline="ols",
+        hover_name="Nome",
+        hover_data=["Squadra", "Pv"]
+    )
+    for trace in scatter.data:
+        fig.add_trace(trace, row=1, col=col)
+
+    # Highlight searched player
+    if search_name:
+        highlight = df[df["Nome"].str.contains(search_name, case=False)]
+        if not highlight.empty:
+            fig.add_trace(
+                px.scatter(
+                    highlight,
+                    x="Mv",
+                    y="Fm",
+                    hover_name="Nome"
+                ).update_traces(
+                    marker=dict(size=15, color="red", symbol="star")
+                ).data[0],
+                row=1, col=col
+            )
+
+fig.update_layout(
+    height=500, width=1600,
+    showlegend=False,
+    title="📈 Mv vs Fm - Portieri 2022-2024"
+)
+
+# Axis titles
+fig.update_xaxes(title_text="Mv", row=1, col=1)
+fig.update_xaxes(title_text="Mv", row=1, col=2)
+fig.update_xaxes(title_text="Mv", row=1, col=3)
+
+fig.update_yaxes(title_text="Fm", row=1, col=1)
+fig.update_yaxes(title_text="Fm", row=1, col=2)
+fig.update_yaxes(title_text="Fm", row=1, col=3)
+
 st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 3: OTHER METRICS =========================
