@@ -193,7 +193,49 @@ fig.update_yaxes(title_text="Fm", row=1, col=3)
 
 st.plotly_chart(fig, use_container_width=True)
 
-#========================= SECTION 3: OTHER METRICS =========================
+#========================= SECTION 3: CORRELATION MATRICES =========================
+st.header("📈 Matrice di Correlazione - Portieri")
+
+# Compute correlation matrices
+corr_gk2022 = gk2022.corr(numeric_only=True)
+corr_gk2023 = gk2023.corr(numeric_only=True)
+corr_gk2024 = gk2024.corr(numeric_only=True)
+
+# Create subplots: 1 row, 3 cols
+fig = make_subplots(
+    rows=1, cols=3,
+    subplot_titles=("2022", "2023", "2024")
+)
+
+# Helper function to add heatmap to subplot
+def add_corr_heatmap(fig, corr_matrix, row, col):
+    heatmap = px.imshow(
+        corr_matrix,
+        text_auto=".2f",
+        color_continuous_scale='RdBu_r',
+        aspect="auto"
+    )
+    for trace in heatmap.data:
+        fig.add_trace(trace, row=row, col=col)
+
+# Add correlation matrices
+add_corr_heatmap(fig, corr_gk2022, row=1, col=1)
+add_corr_heatmap(fig, corr_gk2023, row=1, col=2)
+add_corr_heatmap(fig, corr_gk2024, row=1, col=3)
+
+# Layout adjustments
+fig.update_layout(
+    width=1600,
+    height=600,
+    showlegend=False,
+    title="📊 Matrice di Correlazione Portieri 2022-2024"
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+
+
+#========================= SECTION X: OTHER METRICS =========================
 st.header("⚡ Altre metriche")
 
 for year, df in zip([2022, 2023, 2024], [gk2022, gk2023, gk2024]):
