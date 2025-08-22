@@ -28,6 +28,8 @@ if sezione == "Home":
     - 🎯 **Attaccanti**
 
     Basati sulle **ultime 3 stagioni di Serie A**.
+
+    Per navigare tra i vari ruoli puoi usare la **barra** a lato!
     """)
 
 elif sezione == "Portieri":
