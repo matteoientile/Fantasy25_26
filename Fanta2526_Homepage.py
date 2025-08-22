@@ -12,7 +12,7 @@ Smettila di scorrere listoni interminabili, consumare decine di video pieni di b
 
 ### 🔎 Cosa troverai:
 
-Media, FantaMedie, Overperformance, Underperformance e chi più ne ha più ne metta di
+Medie, FantaMedie, Overperformance, Underperformance e chi più ne ha più ne metta di
 - 🧤 **Portieri**  
 - 🛡️ **Difensori**  
 - ⚽ **Centrocampisti**  
