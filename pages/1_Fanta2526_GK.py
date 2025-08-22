@@ -28,6 +28,10 @@ gk2022 = df2022[df2022["R"] == "P"]
 gk2023 = df2023[df2023["R"] == "P"]
 gk2024 = df2024[df2024["R"] == "P"]
 
+gk2022 = df2022[(df2022["R"] == "P") & (df2022["Pv"] > 1)]
+gk2023 = df2023[(df2023["R"] == "P") & (df2023["Pv"] > 1)]
+gk2024 = df2024[(df2024["R"] == "P") & (df2024["Pv"] > 1)]
+
 #------------------------- GOALKEEPERS BOX PLOT
 # --- Search box ---
 search_name = st.text_input("Cerca un giocatore", "")
