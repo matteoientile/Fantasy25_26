@@ -93,7 +93,7 @@ fig = make_subplots(
     horizontal_spacing=0.1
 )
 
-for col, df, year in zip([1, 2, 3], [gk2022_filtered, gk2023_filtered, gk2024_filtered], [2022, 2023, 2024]):
+for col, df, year in zip([1, 2, 3], [gk2022, gk2023, gk2024], [2022, 2023, 2024]):
     # Base scatter + trendline
     scatter = px.scatter(
         df,
