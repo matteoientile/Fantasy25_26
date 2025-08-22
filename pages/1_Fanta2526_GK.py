@@ -127,7 +127,14 @@ fig.update_layout(
     showlegend=False,
     title="📈 Mv vs Gs - Portieri 2022-2024"
 )
+# Increase horizontal spacing between subplots
+fig.update_xaxes(title_text="Mv", row=1, col=1)
+fig.update_xaxes(title_text="Mv", row=1, col=2)
+fig.update_xaxes(title_text="Mv", row=1, col=3)
 
+fig.update_yaxes(title_text="Gs", row=1, col=1)
+fig.update_yaxes(title_text="Gs", row=1, col=2)
+fig.update_yaxes(title_text="Gs", row=1, col=3)
 st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 3: OTHER METRICS =========================
