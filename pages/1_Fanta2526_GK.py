@@ -1,4 +1,3 @@
-# pages/Fanta2526_GK.py
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -20,69 +19,71 @@ df2022 = df2022.drop(drop_columns, axis=1)
 df2023 = df2023.drop(drop_columns, axis=1)
 df2024 = df2024.drop(drop_columns, axis=1)
 
-df2022 = df2022[df2022["Pv"] > 0]
-df2023 = df2023[df2023["Pv"] > 0]
-df2024 = df2024[df2024["Pv"] > 0]
+df2022 = df2022[df2022["Pv"] > 1]
+df2023 = df2023[df2023["Pv"] > 1]
+df2024 = df2024[df2024["Pv"] > 1]
 
 gk2022 = df2022[df2022["R"] == "P"]
 gk2023 = df2023[df2023["R"] == "P"]
 gk2024 = df2024[df2024["R"] == "P"]
 
-gk2022 = df2022[(df2022["R"] == "P") & (df2022["Pv"] > 1)]
-gk2023 = df2023[(df2023["R"] == "P") & (df2023["Pv"] > 1)]
-gk2024 = df2024[(df2024["R"] == "P") & (df2024["Pv"] > 1)]
-
-#------------------------- GOALKEEPERS BOX PLOT
+#------------------------- GOALKEEPERS BOX PLOTS
 # --- Search box ---
 search_name = st.text_input("Cerca un giocatore", "")
 
-# --- Create subplots ---
-fig = make_subplots(
-    rows=1, cols=3,
-    subplot_titles=("2022", "2023", "2024"),
-    horizontal_spacing=0.15
-)
+# --- Metrics to visualize ---
+metrics = ["Mv", "Fm", "Gs"]
 
-# --- Function to add boxplot + highlight ---
-def add_boxplot(fig, df, col, year):
-    # Base boxplot with points
-    box = px.box(
-        df,
-        y="Mv",
-        points="all",
-        hover_data=["Nome", "Pv"]
-    )
-    for trace in box.data:
-        fig.add_trace(trace, row=1, col=col)
+for metric in metrics:
+    st.subheader(f"📊 {metric} - Boxplot 2022-2024")
     
-    # Highlight searched player if exists
-    if search_name:
-        highlight = df[df["Nome"].str.contains(search_name, case=False)]
-        if not highlight.empty:
-            fig.add_trace(
-                px.scatter(
-                    highlight,
-                    y="Mv",
-                    hover_name="Nome"
-                ).update_traces(
-                    marker=dict(size=15, color="red", symbol="star")
-                ).data[0],
-                row=1, col=col
-            )
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=("2022", "2023", "2024"),
+        horizontal_spacing=0.15
+    )
 
-# --- Add plots for each year ---
-add_boxplot(fig, gk2022, col=1, year=2022)
-add_boxplot(fig, gk2023, col=2, year=2023)
-add_boxplot(fig, gk2024, col=3, year=2024)
+    # Function to add boxplot + highlight
+    def add_boxplot(fig, df, col):
+        # Base boxplot
+        box = px.box(
+            df,
+            y=metric,
+            points="all",
+            hover_data=["Nome", "Pv"]
+        )
+        for trace in box.data:
+            fig.add_trace(trace, row=1, col=col)
+        
+        # Highlight searched player
+        if search_name:
+            highlight = df[df["Nome"].str.contains(search_name, case=False)]
+            if not highlight.empty:
+                fig.add_trace(
+                    px.scatter(
+                        highlight,
+                        y=metric,
+                        hover_name="Nome"
+                    ).update_traces(
+                        marker=dict(size=15, color="red", symbol="star")
+                    ).data[0],
+                    row=1, col=col
+                )
 
-# --- Update layout ---
-fig.update_layout(
-    height=600, width=1200,
-    title="Media Voto 2022 to 2024 (GK)",
-    showlegend=False
-)
+    # Add plots for each year
+    add_boxplot(fig, gk2022, col=1)
+    add_boxplot(fig, gk2023, col=2)
+    add_boxplot(fig, gk2024, col=3)
 
-st.plotly_chart(fig, use_container_width=True)
+    # Update layout
+    fig.update_layout(
+        height=500, width=1200,
+        title=f"{metric} - Portieri 2022 to 2024",
+        showlegend=False
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
 
 
 
