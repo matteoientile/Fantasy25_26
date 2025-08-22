@@ -10,7 +10,9 @@ from dash import Dash, dcc, html, Input, Output
 st.title("📊 Fantacalcio 25/26 - Asta Statistica")
 
 st.markdown("""
-Welcome to the **Fantacalcio Analysis App**!
+È il momento di **svoltare** la tua asta! 
+
+Smettila di scorrere listoni interminabili, consumare decine di video pieni di bias ed opinioni personali: **qui parlano i numeri**
 
 Use the sidebar to explore:
 - 🧤 Goalkeepers  
