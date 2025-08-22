@@ -81,7 +81,7 @@ for metric in metrics:
     st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 2: REGRESSION =========================
-st.header("📈 Scatter xG+xA vs G+A")
+st.header("📈 Correlazioni Coppie di Variabili")
 
 # Create scatter plots with trendline for each year
 for year, df in zip([2022, 2023, 2024], [gk2022, gk2023, gk2024]):
