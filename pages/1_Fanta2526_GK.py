@@ -7,6 +7,11 @@ from plotly.subplots import make_subplots
 st.title("🧤 Portieri - Analisi Statistica")
 st.markdown("""
 In questa sezione analizziamo le performance dei portieri nelle ultime 3 stagioni di Serie A.
+
+Utilizzeremo i seguenti simboli:
+- Mv = Media Voto
+- Fm = Fanta Media
+- Gs = Gol Subiti
 """)
 
 #---------------- READ FILES
