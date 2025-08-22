@@ -34,19 +34,19 @@ if sezione == "Home":
 
 elif sezione == "Portieri":
     st.header("🧤 Portieri")
-    st.write("Qui saranno visualizzati i grafici e le analisi dei portieri")
+    st.write("Qui troverai tutte le informazioni necessarie sui Portieri")
 
 elif sezione == "Difensori":
     st.header("🛡️ Difensori")
-    st.write("Qui saranno visualizzati i grafici e le analisi dei difensori")
+    st.write("Qui troverai tutte le informazioni necessarie sui difensori")
 
 elif sezione == "Centrocampisti":
     st.header("⚽ Centrocampisti")
-    st.write("Qui saranno visualizzati i grafici e le analisi dei centrocampisti")
+    st.write("Qui troverai tutte le informazioni necessarie sui centrocampisti")
 
 elif sezione == "Attaccanti":
     st.header("🎯 Attaccanti")
-    st.write("Qui saranno visualizzati i grafici e le analisi degli attaccanti")
+    st.write("Qui troverai tutte le informazioni necessarie sui attaccanti")
 
 
 
