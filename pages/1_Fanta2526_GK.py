@@ -11,9 +11,9 @@ In questa sezione analizziamo le performance dei portieri nelle ultime 3 stagion
 """)
 
 #---------------- READ FILES
-df2022 = pd.read_excel(r"C:\Users\MATTEO IENTILE\Desktop\Fantacalcio 25-26\2022_23_Merged.xlsx")
-df2023 = pd.read_excel(r"C:\Users\MATTEO IENTILE\Desktop\Fantacalcio 25-26\2023_24_Merged.xlsx")
-df2024 = pd.read_excel(r"C:\Users\MATTEO IENTILE\Desktop\Fantacalcio 25-26\2024_25_Merged.xlsx")
+df2022 = pd.read_excel(r"2022_23_Merged.xlsx")
+df2023 = pd.read_excel(r"2023_24_Merged.xlsx")
+df2024 = pd.read_excel(r"2024_25_Merged.xlsx")
 
 drop_columns = ["Id", "id", "goals", "assists", "yellow_cards", "red_cards", "matched"]
 df2022 = df2022.drop(drop_columns, axis=1)
