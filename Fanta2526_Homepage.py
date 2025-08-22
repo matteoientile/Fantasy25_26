@@ -21,6 +21,7 @@ Tramite la barra a lato avrai a disposizione le più importanti informazioni su
 - 🛡️ Difensori  
 - ⚽ Centrocampisti  
 - 🎯 Attaccanti
+
 relative alle 3 precedenti stagioni di Serie A. 
 
 """)
