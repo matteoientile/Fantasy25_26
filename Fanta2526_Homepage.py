@@ -12,12 +12,13 @@ Smettila di scorrere listoni interminabili, consumare decine di video pieni di b
 ➡️ Nessun problema! Ogni grafico avrà una spiegazione chiara, così potrai prendere le tue decisioni in fase d'asta senza farti influenzare da bias.
 
 ### 🔎 Cosa troverai:
+Tutte le statistiche possibili su
 - 🧤 **Portieri**  
 - 🛡️ **Difensori**  
 - ⚽ **Centrocampisti**  
 - 🎯 **Attaccanti**
 
-Basati sulle **ultime 3 stagioni di Serie A**.
+delle **ultime 3 stagioni di Serie A**.
 """)
 
 
