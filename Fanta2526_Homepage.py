@@ -8,7 +8,7 @@ st.markdown("""
 Smettila di scorrere listoni interminabili, consumare decine di video pieni di bias ed opinioni personali: **qui parlano i numeri**.
 
 **Non capisci nulla di statistica?**  
-➡️ Nessun problema! Ogni grafico avrà una spiegazione chiara, così potrai prendere le tue decisioni in fase d'asta senza farti influenzare da bias.
+➡️ Nessun problema! Ogni grafico avrà una spiegazione chiara, così potrai prendere le tue decisioni in fase d'asta nel modo più rapido possibile.
 
 ### 🔎 Cosa troverai:
 - 🧤 **Portieri**  
