@@ -42,7 +42,7 @@ search_name = st.text_input("Cerca un giocatore", "")
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Portieri")
 
-metrics = ["Mv", "Fm", "Gs"]
+metrics = ["Mv", "Fm", "Gs", "clean_sheet"]
 for metric in metrics:
     st.subheader(f"{metric} - Boxplot 2022-2024")
     
