@@ -26,7 +26,7 @@ df2023 = df2023.drop(drop_columns, axis=1)
 df2024 = df2024.drop(drop_columns, axis=1)
 
 #------------------------- PV FILTER
-min_pv = st.slider("Minimo partite giocate (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
+min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
 
 df2022 = df2022[df2022["Pv"] >= min_pv]
 df2023 = df2023[df2023["Pv"] >= min_pv]
