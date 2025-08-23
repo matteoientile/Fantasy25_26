@@ -12,6 +12,7 @@ Utilizzeremo i seguenti simboli:
 - Mv = Media Voto
 - Fm = Fanta Media
 - Gs = Gol Subiti
+- Pv = Partite a Voto
 """)
 
 #---------------- READ FILES
