@@ -100,9 +100,9 @@ for metric in metrics:
                     row=1, col=col
                 )
 
-    add_boxplot(fig, gk2022, col=1)
-    add_boxplot(fig, gk2023, col=2)
-    add_boxplot(fig, gk2024, col=3)
+    add_boxplot(fig, def2022, col=1)
+    add_boxplot(fig, def2023, col=2)
+    add_boxplot(fig, def2024, col=3)
 
     fig.update_layout(
         height=500, width=1200,
