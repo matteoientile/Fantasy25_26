@@ -11,8 +11,12 @@ In questa sezione analizziamo le performance dei difensori nelle ultime 3 stagio
 Utilizzeremo i seguenti simboli:
 - Mv = Media Voto
 - Fm = Fanta Media
-- x
 - Pv = Partite a Voto
+- key_passess = Passaggi Chiave
+- shots = Tiri 
+- G + A (pts converted) = Somma dei Bonus (goal = +3, assist = +1)
+- Amm = Ammonizioni
+- Esp = Espulsioni
 """)
 
 #---------------- READ FILES
