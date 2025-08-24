@@ -130,7 +130,7 @@ for metric in metrics:
 
     fig.update_layout(
         height=500, width=1200,
-        title=f"{metric} - Centrocampisti 2022-2024",
+        title=f"{metric} - Attaccanti 2022-2024",
         showlegend=True
     )
     st.plotly_chart(fig, use_container_width=True)
