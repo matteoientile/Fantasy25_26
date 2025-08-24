@@ -18,7 +18,7 @@ Smettila di scorrere listoni interminabili, consumare decine di video pieni di b
 Tutte le statistiche possibili su
 - 🧤 **Portieri**  
 - 🛡️ **Difensori**  
-- ⚽ **Centrocampisti**  
+- 📐 **Centrocampisti**  
 - 🎯 **Attaccanti**
 
 delle **ultime 3 stagioni di Serie A**.
