@@ -318,29 +318,7 @@ st.plotly_chart(fig, use_container_width=True)
 #========================= SECTION X: OTHER METRICS =========================
 st.header("⚡ Altre metriche")
 
-for year, df in zip([2022, 2023, 2024], [gk2022, gk2023, gk2024]):
-    st.subheader(f"{year} - Distribuzione xBonus")
-    fig = px.histogram(
-        df,
-        x="xBonus",
-        nbins=20,
-        hover_data=["Nome", "Squadra", "Pv"]
-    )
-    # Highlight searched player
-    if search_name:
-        highlight = df[df["Nome"].str.contains(search_name, case=False)]
-        if not highlight.empty:
-            fig.add_trace(
-                px.scatter(
-                    highlight,
-                    x="xBonus",
-                    y=[0]*len(highlight),  # place marker at bottom of histogram
-                    hover_name="Nome"
-                ).update_traces(
-                    marker=dict(size=15, color="red", symbol="star")
-                ).data[0]
-            )
-    st.plotly_chart(fig, use_container_width=True)
+
 
 
 
