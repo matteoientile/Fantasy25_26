@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots
 #---------------- STREAMLIT HEADER
 st.title("📐 Centrocampisti - Analisi Statistica")
 st.markdown("""
-In questa sezione analizziamo le performance dei difensori nelle ultime 3 stagioni di Serie A.
+In questa sezione analizziamo le performance dei centrocampisti nelle ultime 3 stagioni di Serie A.
 
 Utilizzeremo i seguenti simboli:
 - Mv = Media Voto
