@@ -179,4 +179,4 @@ for x, y, title in pairs:
 #========================= SECTION 3:  =========================
 
 #========================= SECTION X: OTHER METRICS =========================
-st.header("⚡ Altre metrich")
+st.header("⚡ Altre metriche")
