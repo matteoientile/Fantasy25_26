@@ -134,3 +134,79 @@ for metric in metrics:
         showlegend=True
     )
     st.plotly_chart(fig, use_container_width=True)
+
+
+
+#========================= SECTION 2: REGRESSION =========================
+st.header("📈 Correlazioni Coppie di Variabili")
+
+def add_scatter(fig, df, x, y, col):
+    scatter = px.scatter(
+        df,
+        x=x,
+        y=y,
+        trendline="ols",
+        hover_name="Nome",
+        hover_data=["Squadra", "Pv"]
+    )
+    for trace in scatter.data:
+        fig.add_trace(trace, row=1, col=col)
+
+    # Highlight selected players
+    for i, name in enumerate(search_names):
+        highlight = df[df["Nome"] == name]
+        if not highlight.empty:
+            fig.add_trace(
+                px.scatter(
+                    highlight,
+                    x=x,
+                    y=y,
+                    hover_name="Nome"
+                ).update_traces(
+                    marker=dict(size=15, color=colors[i % len(colors)], symbol=symbols[i % len(symbols)]),
+                    name=name,
+                    showlegend=True
+                ).data[0],
+                row=1, col=col
+            )
+
+# Variabili da confrontare
+pairs = [
+    ("Mv", "Amm", "📈 Mv vs Amm - Difensori 2022-2024"),
+    ("Mv", "Fm", "📈 Mv vs Fm - Difensori 2022-2024"),
+    ("shots", "Gf", "📈 Tiri vs Gf - Difensori 2022-2024"),
+    ("xG + xA (pts converted)", "G + A (pts converted)", "📈 xBonus vs Bonus - Difensori 2022-2024")
+]
+
+for x, y, title in pairs:
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=("2022", "2023", "2024"),
+        horizontal_spacing=0.1
+    )
+    for col, df in zip([1, 2, 3], [def2022, def2023, def2024]):
+        add_scatter(fig, df, x, y, col)
+
+    fig.update_layout(
+        height=500, width=1600,
+        showlegend=True,
+        title=title
+    )
+    fig.update_xaxes(title_text=x, row=1, col=1)
+    fig.update_xaxes(title_text=x, row=1, col=2)
+    fig.update_xaxes(title_text=x, row=1, col=3)
+
+    fig.update_yaxes(title_text=y, row=1, col=1)
+    fig.update_yaxes(title_text=y, row=1, col=2)
+    fig.update_yaxes(title_text=y, row=1, col=3)
+
+    st.plotly_chart(fig, use_container_width=True)
+
+#========================= SECTION 3:  =========================
+
+#========================= SECTION X: OTHER METRICS =========================
+st.header("⚡ Altre metriche")
+
+
+
+
