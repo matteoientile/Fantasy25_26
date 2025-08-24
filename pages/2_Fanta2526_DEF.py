@@ -40,11 +40,6 @@ df2024["actualBonus"] = (3*df2024["Gf"] + 1*df2024["Ass"] + 3*df2024["Rp"] + 1*d
 df2024["xG + xA (pts converted)"] = (3*df2024["xG"] + 1*df2024["xA"])
 df2024["G + A (pts converted)"] = (3*df2024["Gf"] + 1*df2024["Ass"])
 
-corrdef2022 = def2022.corr(numeric_only=True)
-corrdef2023 = def2023.corr(numeric_only=True)
-corrdef2024 = def2024.corr(numeric_only=True)
-corrdef = (corrdef2022 + corrdef2023 + corrdef2024)/3
-
 #------------------------- PV FILTER
 min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
 
@@ -65,6 +60,10 @@ colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qua
 symbols = ["circle", "square", "diamond", "star", "cross", "x", "triangle-up", "triangle-down"]
 
 #========================= SECTION 0: CORRELATION MATRICES =========================
+corrdef2022 = def2022.corr(numeric_only=True)
+corrdef2023 = def2023.corr(numeric_only=True)
+corrdef2024 = def2024.corr(numeric_only=True)
+corrdef = (corrdef2022 + corrdef2023 + corrdef2024)/3
 st.header("📊 Matrici di correlazione - Difensori")
 fig = px.imshow(
     corrdef,
