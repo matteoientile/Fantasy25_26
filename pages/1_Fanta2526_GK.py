@@ -59,6 +59,26 @@ search_names = st.multiselect("Seleziona uno o più portieri da evidenziare", op
 colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qualitative.Dark24
 symbols = ["circle", "square", "diamond", "star", "cross", "x", "triangle-up", "triangle-down"]
 
+#========================= SECTION 0: CORRELATION MATRICES =========================
+corrgk2022 = gk2022.corr(numeric_only=True)
+corrgk2023 = gk2023.corr(numeric_only=True)
+corrgk2024 = gk2024.corr(numeric_only=True)
+corrgk = (corrgk2022 + corrgk2023 + corrgk2024)/3
+st.header("📊 Matrice di correlazione - Portieri")
+fig = px.imshow(
+    corrgk,
+    text_auto=".2f",
+    color_continuous_scale='RdBu_r',
+    aspect="auto",
+    title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (POR)"
+)
+
+fig.update_layout(
+    height=800
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Portieri")
 
