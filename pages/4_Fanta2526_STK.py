@@ -4,9 +4,9 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 #---------------- STREAMLIT HEADER
-st.title(" Attaccanti - Analisi Statistica")
+st.title("🎯 Attaccanti - Analisi Statistica")
 st.markdown("""
-In questa sezione analizziamo le performance dei difensori nelle ultime 3 stagioni di Serie A.
+In questa sezione analizziamo le performance degli attaccanti nelle ultime 3 stagioni di Serie A.
 
 Utilizzeremo i seguenti simboli:
 - Mv = Media Voto
@@ -51,12 +51,12 @@ df2022 = df2022[df2022["Pv"] >= min_pv]
 df2023 = df2023[df2023["Pv"] >= min_pv]
 df2024 = df2024[df2024["Pv"] >= min_pv]
 
-mid2022 = df2022[df2022["R"] == "C"]
-mid2023 = df2023[df2023["R"] == "C"]
-mid2024 = df2024[df2024["R"] == "C"]
+stk2022 = df2022[df2022["R"] == "A"]
+stk2023 = df2023[df2023["R"] == "A"]
+stk2024 = df2024[df2024["R"] == "A"]
 
 #------------------------- MULTI SEARCH BOX
-all_names = pd.concat([mid2022["Nome"], mid2023["Nome"], mid2024["Nome"]]).unique()
+all_names = pd.concat([stk2022["Nome"], stk2023["Nome"], stk2024["Nome"]]).unique()
 search_names = st.multiselect("Seleziona uno o più portieri da evidenziare", options=sorted(all_names), default=[])
 
 # Palette e simboli
@@ -64,17 +64,17 @@ colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qua
 symbols = ["circle", "square", "diamond", "star", "cross", "x", "triangle-up", "triangle-down"]
 
 #========================= SECTION 0: CORRELATION MATRICES =========================
-corrmid2022 = mid2022.corr(numeric_only=True)
-corrmid2023 = mid2023.corr(numeric_only=True)
-corrmid2024 = mid2024.corr(numeric_only=True)
-corrmid = (corrmid2022 + corrmid2023 + corrmid2024)/3
+corrstk2022 = stk2022.corr(numeric_only=True)
+corrstk2023 = stk2023.corr(numeric_only=True)
+corrstk2024 = stk2024.corr(numeric_only=True)
+corrstk = (corrstk2022 + corrstk2023 + corrstk2024)/3
 st.header("📊 Matrici di correlazione - Centrocampisti")
 fig = px.imshow(
-    corrmid,
+    corrstk,
     text_auto=".2f",
     color_continuous_scale='RdBu_r',
     aspect="auto",
-    title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (CEN)"
+    title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (ATT)"
 )
 
 fig.update_layout(
@@ -84,7 +84,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 1: BOX PLOTS =========================
-st.header("📊 Boxplot Centrocampisti")
+st.header("📊 Boxplot Attccanti")
 
 metrics = ["Mv", "Fm", "Gf", "Ass", "key_passes", "shots", "G + A (pts converted)", "Amm"]
 for metric in metrics:
@@ -124,9 +124,9 @@ for metric in metrics:
                     row=1, col=col
                 )
 
-    add_boxplot(fig, mid2022, col=1)
-    add_boxplot(fig, mid2023, col=2)
-    add_boxplot(fig, mid2024, col=3)
+    add_boxplot(fig, stk2022, col=1)
+    add_boxplot(fig, stk2023, col=2)
+    add_boxplot(fig, stk2024, col=3)
 
     fig.update_layout(
         height=500, width=1200,
@@ -172,12 +172,11 @@ def add_scatter(fig, df, x, y, col):
 
 # Variabili da confrontare
 pairs = [
-    ("Mv", "Amm", "📈 Mv vs Amm - Centrocampisti 2022-2024"),
-    ("Mv", "Fm", "📈 Mv vs Fm - Centrocampisti 2022-2024"),
-    ("shots", "Gf", "📈 Tiri vs Gf - Centrocampisti 2022-2024"),
-    ("xG + xA (pts converted)", "G + A (pts converted)", "📈 xBonus vs Bonus - Centrocampisti 2022-2024"),
-    ("xG", "Gf", "📈 xG vs Gol Fatti - Centrocampisti 2022-2024"),
-    ("xA", "Ass", "📈 xA vs Assist - Centrocampisti 2022-2024"),
+    ("Mv", "Fm", "📈 Mv vs Fm - Attaccanti 2022-2024"),
+    ("shots", "Gf", "📈 Tiri vs Gf - Attaccanti 2022-2024"),
+    ("xG + xA (pts converted)", "G + A (pts converted)", "📈 xBonus vs Bonus - Attaccanti 2022-2024"),
+    ("xG", "Gf", "📈 xG vs Gol Fatti - Attaccanti 2022-2024"),
+    ("xA", "Ass", "📈 xA vs Assist - Attaccanti 2022-2024"),
 ]
 
 for x, y, title in pairs:
@@ -186,7 +185,7 @@ for x, y, title in pairs:
         subplot_titles=("2022", "2023", "2024"),
         horizontal_spacing=0.1
     )
-    for col, df in zip([1, 2, 3], [mid2022, mid2023, mid2024]):
+    for col, df in zip([1, 2, 3], [stk2022, stk2023, stk2024]):
         add_scatter(fig, df, x, y, col)
 
     fig.update_layout(
