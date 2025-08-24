@@ -40,9 +40,9 @@ df2024["actualBonus"] = (3*df2024["Gf"] + 1*df2024["Ass"] + 3*df2024["Rp"] + 1*d
 df2024["xG + xA (pts converted)"] = (3*df2024["xG"] + 1*df2024["xA"])
 df2024["G + A (pts converted)"] = (3*df2024["Gf"] + 1*df2024["Ass"])
 
-corrmid2022 = mid2022.corr(numeric_only=True)
-corrmid2023 = mid2023.corr(numeric_only=True)
-corrmid2024 = mid2024.corr(numeric_only=True)
+corrdef2022 = def2022.corr(numeric_only=True)
+corrdef2023 = def2023.corr(numeric_only=True)
+corrdef2024 = def2024.corr(numeric_only=True)
 corrdef = (corrdef2022 + corrdef2023 + corrdef2024)/3
 
 #------------------------- PV FILTER
