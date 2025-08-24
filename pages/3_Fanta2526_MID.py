@@ -4,7 +4,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 #---------------- STREAMLIT HEADER
-st.title("🛡️ Difensori - Analisi Statistica")
+st.title("📐 Centrocampisti - Analisi Statistica")
 st.markdown("""
 In questa sezione analizziamo le performance dei difensori nelle ultime 3 stagioni di Serie A.
 
