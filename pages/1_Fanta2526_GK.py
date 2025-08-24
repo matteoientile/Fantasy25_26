@@ -35,7 +35,6 @@ df2023["actualBonus"] = (3*df2023["Gf"] + 1*df2023["Ass"] + 3*df2023["Rp"] + 1*d
 df2023["xG + xA (pts converted)"] = (3*df2023["xG"] + 1*df2023["xA"])
 df2023["G + A (pts converted)"] = (3*df2023["Gf"] + 1*df2023["Ass"])
 
-
 df2024["xBonus"] = (3*df2024["xG"] + 1*df2024["xA"] + 3*df2024["Rp"]+ 1*df2024["clean_sheet"]) - (2*df2024["Au"]+ 1*df2024["Gs"] + 1*df2024["Esp"] + 0.5*df2024["Amm"] + df2024["R-"])
 df2024["actualBonus"] = (3*df2024["Gf"] + 1*df2024["Ass"] + 3*df2024["Rp"] + 1*df2024["clean_sheet"]) - (2*df2024["Au"]+ 1*df2024["Gs"] + 1*df2024["Esp"] + 0.5*df2024["Amm"] + df2024["R-"])
 df2024["xG + xA (pts converted)"] = (3*df2024["xG"] + 1*df2024["xA"])
@@ -52,8 +51,13 @@ gk2022 = df2022[df2022["R"] == "P"]
 gk2023 = df2023[df2023["R"] == "P"]
 gk2024 = df2024[df2024["R"] == "P"]
 
-#------------------------- SEARCH BOX
-search_name = st.text_input("Cerca un giocatore", "")
+#------------------------- MULTI SEARCH BOX
+all_names = pd.concat([gk2022["Nome"], gk2023["Nome"], gk2024["Nome"]]).unique()
+search_names = st.multiselect("Seleziona uno o più portieri da evidenziare", options=sorted(all_names), default=[])
+
+# Palette e simboli
+colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qualitative.Dark24
+symbols = ["circle", "square", "diamond", "star", "cross", "x", "triangle-up", "triangle-down"]
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Portieri")
@@ -79,9 +83,9 @@ for metric in metrics:
         for trace in box.data:
             fig.add_trace(trace, row=1, col=col)
         
-        # Highlight searched player
-        if search_name:
-            highlight = df[df["Nome"].str.contains(search_name, case=False)]
+        # Highlight selected players
+        for i, name in enumerate(search_names):
+            highlight = df[df["Nome"] == name]
             if not highlight.empty:
                 fig.add_trace(
                     px.scatter(
@@ -89,7 +93,9 @@ for metric in metrics:
                         y=metric,
                         hover_name="Nome"
                     ).update_traces(
-                        marker=dict(size=15, color="red", symbol="star")
+                        marker=dict(size=15, color=colors[i % len(colors)], symbol=symbols[i % len(symbols)]),
+                        name=name,
+                        showlegend=True
                     ).data[0],
                     row=1, col=col
                 )
@@ -101,25 +107,18 @@ for metric in metrics:
     fig.update_layout(
         height=500, width=1200,
         title=f"{metric} - Portieri 2022-2024",
-        showlegend=False
+        showlegend=True
     )
     st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 2: REGRESSION =========================
 st.header("📈 Correlazioni Coppie di Variabili")
 
-fig = make_subplots(
-    rows=1, cols=3,
-    subplot_titles=("2022", "2023", "2024"),
-    horizontal_spacing=0.1
-)
-
-for col, df, year in zip([1, 2, 3], [gk2022, gk2023, gk2024], [2022, 2023, 2024]):
-    # Base scatter + trendline
+def add_scatter(fig, df, x, y, col):
     scatter = px.scatter(
         df,
-        x="Mv",
-        y="Gs",
+        x=x,
+        y=y,
         trendline="ols",
         hover_name="Nome",
         hover_data=["Squadra", "Pv"]
@@ -127,211 +126,57 @@ for col, df, year in zip([1, 2, 3], [gk2022, gk2023, gk2024], [2022, 2023, 2024]
     for trace in scatter.data:
         fig.add_trace(trace, row=1, col=col)
 
-    # Highlight searched player
-    if search_name:
-        highlight = df[df["Nome"].str.contains(search_name, case=False)]
+    # Highlight selected players
+    for i, name in enumerate(search_names):
+        highlight = df[df["Nome"] == name]
         if not highlight.empty:
             fig.add_trace(
                 px.scatter(
                     highlight,
-                    x="Mv",
-                    y="Gs",
+                    x=x,
+                    y=y,
                     hover_name="Nome"
                 ).update_traces(
-                    marker=dict(size=15, color="red", symbol="star")
+                    marker=dict(size=15, color=colors[i % len(colors)], symbol=symbols[i % len(symbols)]),
+                    name=name,
+                    showlegend=True
                 ).data[0],
                 row=1, col=col
             )
 
-fig.update_layout(
-    height=500, width=1600,
-    showlegend=False,
-    title="📈 Mv vs Gs - Portieri 2022-2024"
-)
-# Increase horizontal spacing between subplots
-fig.update_xaxes(title_text="Mv", row=1, col=1)
-fig.update_xaxes(title_text="Mv", row=1, col=2)
-fig.update_xaxes(title_text="Mv", row=1, col=3)
+# Variabili da confrontare
+pairs = [
+    ("Mv", "Gs", "📈 Mv vs Gs - Portieri 2022-2024"),
+    ("Mv", "Fm", "📈 Mv vs Fm - Portieri 2022-2024"),
+    ("clean_sheet", "Mv", "📈 Clean Sheet vs Mv - Portieri 2022-2024"),
+    ("clean_sheet", "Fm", "📈 Clean Sheet vs Fm - Portieri 2022-2024")
+]
 
-fig.update_yaxes(title_text="Gs", row=1, col=1)
-fig.update_yaxes(title_text="Gs", row=1, col=2)
-fig.update_yaxes(title_text="Gs", row=1, col=3)
-st.plotly_chart(fig, use_container_width=True)
-
-fig = make_subplots(
-    rows=1, cols=3,
-    subplot_titles=("2022", "2023", "2024"),
-    horizontal_spacing=0.1
-)
-
-for col, df, year in zip([1, 2, 3], [gk2022, gk2023, gk2024], [2022, 2023, 2024]):
-    # Base scatter + trendline
-    scatter = px.scatter(
-        df,
-        x="Mv",
-        y="Fm",
-        trendline="ols",
-        hover_name="Nome",
-        hover_data=["Squadra", "Pv"]
+for x, y, title in pairs:
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=("2022", "2023", "2024"),
+        horizontal_spacing=0.1
     )
-    for trace in scatter.data:
-        fig.add_trace(trace, row=1, col=col)
+    for col, df in zip([1, 2, 3], [gk2022, gk2023, gk2024]):
+        add_scatter(fig, df, x, y, col)
 
-    # Highlight searched player
-    if search_name:
-        highlight = df[df["Nome"].str.contains(search_name, case=False)]
-        if not highlight.empty:
-            fig.add_trace(
-                px.scatter(
-                    highlight,
-                    x="Mv",
-                    y="Fm",
-                    hover_name="Nome"
-                ).update_traces(
-                    marker=dict(size=15, color="red", symbol="star")
-                ).data[0],
-                row=1, col=col
-            )
-
-fig.update_layout(
-    height=500, width=1600,
-    showlegend=False,
-    title="📈 Mv vs Fm - Portieri 2022-2024"
-)
-
-# Axis titles
-fig.update_xaxes(title_text="Mv", row=1, col=1)
-fig.update_xaxes(title_text="Mv", row=1, col=2)
-fig.update_xaxes(title_text="Mv", row=1, col=3)
-
-fig.update_yaxes(title_text="Fm", row=1, col=1)
-fig.update_yaxes(title_text="Fm", row=1, col=2)
-fig.update_yaxes(title_text="Fm", row=1, col=3)
-
-st.plotly_chart(fig, use_container_width=True)
-
-
-fig = make_subplots(
-    rows=1, cols=3,
-    subplot_titles=("2022", "2023", "2024"),
-    horizontal_spacing=0.1
-)
-
-for col, df, year in zip([1, 2, 3], [gk2022, gk2023, gk2024], [2022, 2023, 2024]):
-    # Base scatter + trendline
-    scatter = px.scatter(
-        df,
-        x="clean_sheet",
-        y="Mv",
-        trendline="ols",
-        hover_name="Nome",
-        hover_data=["Squadra", "Pv"]
+    fig.update_layout(
+        height=500, width=1600,
+        showlegend=True,
+        title=title
     )
-    for trace in scatter.data:
-        fig.add_trace(trace, row=1, col=col)
+    fig.update_xaxes(title_text=x, row=1, col=1)
+    fig.update_xaxes(title_text=x, row=1, col=2)
+    fig.update_xaxes(title_text=x, row=1, col=3)
 
-    # Highlight searched player
-    if search_name:
-        highlight = df[df["Nome"].str.contains(search_name, case=False)]
-        if not highlight.empty:
-            fig.add_trace(
-                px.scatter(
-                    highlight,
-                    x="clean_sheet",
-                    y="Mv",
-                    hover_name="Nome"
-                ).update_traces(
-                    marker=dict(size=15, color="red", symbol="star")
-                ).data[0],
-                row=1, col=col
-            )
+    fig.update_yaxes(title_text=y, row=1, col=1)
+    fig.update_yaxes(title_text=y, row=1, col=2)
+    fig.update_yaxes(title_text=y, row=1, col=3)
 
-fig.update_layout(
-    height=500, width=1600,
-    showlegend=False,
-    title="📈 Clean Sheet vs Mv - Portieri 2022-2024"
-)
-# Increase horizontal spacing between subplots
-fig.update_xaxes(title_text="clean_sheet", row=1, col=1)
-fig.update_xaxes(title_text="clean_sheet", row=1, col=2)
-fig.update_xaxes(title_text="clean_sheet", row=1, col=3)
-
-fig.update_yaxes(title_text="Mv", row=1, col=1)
-fig.update_yaxes(title_text="Mv", row=1, col=2)
-fig.update_yaxes(title_text="Mv", row=1, col=3)
-st.plotly_chart(fig, use_container_width=True)
-
-
-fig = make_subplots(
-    rows=1, cols=3,
-    subplot_titles=("2022", "2023", "2024"),
-    horizontal_spacing=0.1
-)
-
-for col, df, year in zip([1, 2, 3], [gk2022, gk2023, gk2024], [2022, 2023, 2024]):
-    # Base scatter + trendline
-    scatter = px.scatter(
-        df,
-        x="clean_sheet",
-        y="Fm",
-        trendline="ols",
-        hover_name="Nome",
-        hover_data=["Squadra", "Pv"]
-    )
-    for trace in scatter.data:
-        fig.add_trace(trace, row=1, col=col)
-
-    # Highlight searched player
-    if search_name:
-        highlight = df[df["Nome"].str.contains(search_name, case=False)]
-        if not highlight.empty:
-            fig.add_trace(
-                px.scatter(
-                    highlight,
-                    x="clean_sheet",
-                    y="Fm",
-                    hover_name="Nome"
-                ).update_traces(
-                    marker=dict(size=15, color="red", symbol="star")
-                ).data[0],
-                row=1, col=col
-            )
-
-fig.update_layout(
-    height=500, width=1600,
-    showlegend=False,
-    title="📈 Clean Sheet vs Fm - Portieri 2022-2024"
-)
-# Increase horizontal spacing between subplots
-fig.update_xaxes(title_text="clean_sheet", row=1, col=1)
-fig.update_xaxes(title_text="clean_sheet", row=1, col=2)
-fig.update_xaxes(title_text="clean_sheet", row=1, col=3)
-
-fig.update_yaxes(title_text="Fm", row=1, col=1)
-fig.update_yaxes(title_text="Fm", row=1, col=2)
-fig.update_yaxes(title_text="Fm", row=1, col=3)
-st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 3:  =========================
 
-
 #========================= SECTION X: OTHER METRICS =========================
 st.header("⚡ Altre metriche")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
