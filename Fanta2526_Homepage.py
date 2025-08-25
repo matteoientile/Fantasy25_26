@@ -1,6 +1,6 @@
 import streamlit as st 
+st.set_page_config(page_title="Fantacalcio 25/26", layout="wide") 
 
-st.set_page_config(page_title="Fantacalcio 25/26", layout="wide") # <--- this makes the app use the full browser width
 st.title("📊 Fantacalcio 25/26 - Asta Statistica")
 
 st.markdown(""" È il momento di **svoltare** la tua asta!
