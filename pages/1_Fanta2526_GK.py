@@ -97,9 +97,10 @@ for metric in metrics:
 
     def add_boxplot(fig, df, col):
         # Base boxplot
-        box = px.box(
+        box = px.violin(
             df,
             y=metric,
+            box=True,
             points="all",
             hover_data=["Nome", "Squadra", "Pv"]
         )
