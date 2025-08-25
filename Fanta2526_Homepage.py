@@ -47,8 +47,7 @@ with st.expander("🔢 SPIEGAZIONE SEMPLICE (anche se odi la statistica)"):
     - È come un box plot, ma con in più la **forma** della distribuzione.  
     - La parte più larga = dove ci sono più giocatori con quel valore.  
     - La linea al centro = la mediana (il 50% dei giocatori sta sopra, il 50% sotto).  
-    - Se il “violino” è molto largo in alto → tanti giocatori con voti alti.  
-    - Se è largo in basso → tanti giocatori con voti bassi.  
+    - "Violino” molto largo in corrispondenza di un valore = valore molto frequente.  
     👉 Serve per capire **non solo i valori tipici**, ma anche **come sono distribuiti** i giocatori
 
     ---
