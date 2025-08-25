@@ -104,7 +104,7 @@ st.plotly_chart(fig, use_container_width=True)
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Centrocampisti")
 
-metrics = ["Mv", "Fm", "Gf", "Ass", "key_passes", "shots", "G + A (pts converted)", "Amm"]
+metrics = ["Mv", "Fm", "Gf", "Ass", "xG_per90", "xA_per90", "key_passes", "Tiri a partita", "G + A (pts converted)", "Rc", "R+", "% Rigori Segnati", "Minuti a partita", "Amm"]
 for metric in metrics:
     st.subheader(f"{metric} - Boxplot 2022-2024")
     
