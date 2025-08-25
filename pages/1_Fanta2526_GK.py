@@ -5,7 +5,7 @@ from plotly.subplots import make_subplots
 
 #---------------- STREAMLIT HEADER
 st.set_page_config(page_title="Fantacalcio 25/26 - Portieri", layout="wide") 
-st.title("🧤 Portiei - Analisi Statistica")
+st.title("🧤 Portieri - Analisi Statistica")
 st.markdown("""
 In questa sezione analizziamo le performance dei portieri nelle ultime 3 stagioni di Serie A.
 
