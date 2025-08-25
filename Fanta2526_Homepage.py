@@ -34,11 +34,11 @@ with st.expander("🔢 SPIEGAZIONE SEMPLICE (anche se odi la statistica)"):
 
     ---
 
-    ### 📦 Box Plot (medie dei giocatori)
+    ### 📦 Box Plot
     - Ogni “scatola” riassume i valori di alcune statistiche dei giocatori.  
-    - La linea al centro = la media tipica dei giocatori.  
-    - La scatola = dove si concentra la maggior parte dei giocatori.  
-    - I puntini fuori = giocatori “speciali” (molto meglio o molto peggio della massa).  
+    - La linea al centro = la mediana, cioè il valore che divide i giocatori in due metà: il 50% ha un valore più basso e il 50% più alto
+    - La scatola = qui dentro si concentra la maggior parte dei giocatori.  
+    - I puntini fuori = giocatori “speciali” in quella statistica (molto meglio o molto peggio della massa).  
     👉 Serve per confrontare rapidamente dei giocatori su una precisa statistica (Media Voto, Fanta Media...).  
 
     ---
@@ -47,7 +47,7 @@ with st.expander("🔢 SPIEGAZIONE SEMPLICE (anche se odi la statistica)"):
     - Ogni puntino = un giocatore.  
     - La posizione dice **come combina due statistiche** (es. tiri vs gol).  
     - La linea indica la tendenza generale: se sale → chi tira di più segna di più.  
-    👉 Serve per confrontare coppie di statistiche, e capirne la relazione
+    👉 Serve per confrontare coppie di statistiche e capirne la relazione
     """)
 
 
