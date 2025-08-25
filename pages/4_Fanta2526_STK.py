@@ -231,7 +231,7 @@ st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione")
 if search_names:
     radar_metrics = [
         "Pv", "Mv", "Fm", "Gf", "Ass", "xG_per90", "xA_per90",
-        "% Gol/Tiri", "% Rigori Segnati"
+        "% Gol/Tiri"
     ]
 
     seasons = {
