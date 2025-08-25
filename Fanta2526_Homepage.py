@@ -43,6 +43,16 @@ with st.expander("🔢 SPIEGAZIONE SEMPLICE (anche se odi la statistica)"):
 
     ---
 
+    ### 🎻 Violin Plot (medie dei giocatori)
+    - È come un box plot, ma con in più la **forma** della distribuzione.  
+    - La parte più larga = dove ci sono più giocatori con quel valore.  
+    - La linea al centro = la mediana (il 50% dei giocatori sta sopra, il 50% sotto).  
+    - Se il “violino” è molto largo in alto → tanti giocatori con voti alti.  
+    - Se è largo in basso → tanti giocatori con voti bassi.  
+    👉 Serve per capire **non solo i valori tipici**, ma anche **come sono distribuiti** i giocatori.
+
+    ---
+    
     ### 🔄 Scatter Plot + Regressione
     - Ogni puntino = un giocatore.  
     - La posizione dice **come combina due statistiche** (es. tiri vs gol).  
