@@ -4,6 +4,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 #---------------- STREAMLIT HEADER
+st.set_page_config(page_title="Fantacalcio 25/26 - Difensori", layout="wide") 
 st.title("🛡️ Difensori - Analisi Statistica")
 st.markdown("""
 In questa sezione analizziamo le performance dei difensori nelle ultime 3 stagioni di Serie A.
