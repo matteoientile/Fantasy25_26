@@ -87,7 +87,7 @@ corrstk2022 = stk2022.corr(numeric_only=True)
 corrstk2023 = stk2023.corr(numeric_only=True)
 corrstk2024 = stk2024.corr(numeric_only=True)
 corrstk = (corrstk2022 + corrstk2023 + corrstk2024)/3
-st.header("📊 Matrici di correlazione - Centrocampisti")
+st.header("📊 Matrici di correlazione - Attaccanti")
 fig = px.imshow(
     corrstk,
     text_auto=".2f",
@@ -103,7 +103,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 1: BOX PLOTS =========================
-st.header("📊 Boxplot Attccanti")
+st.header("📊 Boxplot Attaccanti")
 
 metrics = ["Mv", "Fm", "Gf", "Ass", "xG_per90", "xA_per90", "key_passes", "Tiri a partita", "G + A (pts converted)",
            "Rc", "R+", "% Rigori Segnati", "Minuti a partita", "Amm", "Amm a partita"]
