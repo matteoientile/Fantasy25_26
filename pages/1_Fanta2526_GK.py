@@ -96,16 +96,16 @@ for metric in metrics:
     )
 
 def add_boxplot(fig, df, col):
-        # Base boxplot
-        box = px.violin(
-            df,
-            y=metric,
-            box=True,
-            points="all",
-            hover_data=["Nome", "Squadra", "Pv"]
-        )
-        for trace in box.data:
-            fig.add_trace(trace, row=1, col=col)
+    # Base boxplot
+    box = px.violin(
+        df,
+        y=metric,
+        box=True,
+        points="all",
+        hover_data=["Nome", "Squadra", "Pv"]
+    )
+    for trace in box.data:
+        fig.add_trace(trace, row=1, col=col)
         
         # Highlight selected players
         for i, name in enumerate(search_names):
