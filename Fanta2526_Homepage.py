@@ -12,7 +12,7 @@ st.markdown("""
 Smettila di scorrere listoni interminabili, consumare decine di video pieni di bias ed opinioni personali: **qui parlano i numeri**.
 
 ### 🔎 Cosa troverai:
-Tutte le statistiche possibili su
+Tantissime statistice (Calcistiche e Fantacalcistiche) su
 - 🧤 **Portieri**  
 - 🛡️ **Difensori**  
 - 📐 **Centrocampisti**  
