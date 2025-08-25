@@ -51,4 +51,5 @@ with st.expander("🔢 SPIEGAZIONE SEMPLICE (anche se odi la statistica)"):
     - L’asse X rappresenta una statistica, l’asse Y un’altra.  
     - La linea indica la tendenza generale: se sale → chi ha valori più alti in X tende ad avere valori più alti anche in Y.  
     👉 Utile per confrontare due statistiche e capire se sono collegate.
-    """)
+    """
+               )
