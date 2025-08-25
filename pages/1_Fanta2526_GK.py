@@ -95,7 +95,7 @@ for metric in metrics:
         horizontal_spacing=0.15
     )
 
-    def add_boxplot(fig, df, col):
+def add_boxplot(fig, df, col):
         # Base boxplot
         box = px.violin(
             df,
