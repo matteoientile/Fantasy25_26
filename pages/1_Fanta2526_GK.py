@@ -95,7 +95,7 @@ for metric in metrics:
         horizontal_spacing=0.15
     )
 
-def add_boxplot(fig, df, col):
+def add_boxplot(fig, df, col, metric):
     # Base boxplot
     box = px.violin(
         df,
@@ -106,23 +106,23 @@ def add_boxplot(fig, df, col):
     )
     for trace in box.data:
         fig.add_trace(trace, row=1, col=col)
-        
-        # Highlight selected players
-        for i, name in enumerate(search_names):
-            highlight = df[df["Nome"] == name]
-            if not highlight.empty:
-                fig.add_trace(
-                    px.scatter(
-                        highlight,
-                        y=metric,
-                        hover_name="Nome"
-                    ).update_traces(
-                        marker=dict(size=15, color=colors[i % len(colors)], symbol=symbols[i % len(symbols)]),
-                        name=name,
-                        showlegend=True
-                    ).data[0],
-                    row=1, col=col
-                )
+
+    # Highlight selected players
+    for i, name in enumerate(search_names):
+        highlight = df[df["Nome"] == name]
+        if not highlight.empty:
+            fig.add_trace(
+                px.scatter(
+                    highlight,
+                    y=metric,
+                    hover_name="Nome"
+                ).update_traces(
+                    marker=dict(size=15, color=colors[i % len(colors)], symbol=symbols[i % len(symbols)]),
+                    name=name,
+                    showlegend=True
+                ).data[0],
+                row=1, col=col
+            )
 
     add_boxplot(fig, gk2022, col=1)
     add_boxplot(fig, gk2023, col=2)
