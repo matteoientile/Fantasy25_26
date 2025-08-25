@@ -225,7 +225,6 @@ for x, y, title in pairs:
 
     st.plotly_chart(fig, use_container_width=True)
 
-#========================= SECTION 3:  =========================
 #========================= SECTION 3: RADAR PLOT NORMALIZZATO =========================
 st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione")
 
@@ -251,7 +250,6 @@ if search_names:
             col.info(f"Nessun giocatore selezionato in {season_name}.")
             continue
 
-        # Media se il giocatore compare più volte nella stessa stagione
         df_selected = df_selected.groupby("Nome")[radar_metrics].mean().reset_index()
 
         # Normalizzazione: per ogni metrica il massimo tra i giocatori selezionati diventa 1
