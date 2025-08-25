@@ -120,8 +120,8 @@ for metric in metrics:
         box = px.violin(
             df,
             y=metric,
-            points="all",
             box=True,
+            points="all",
             hover_data=["Nome", "Squadra", "Pv"]
         )
         for trace in box.data:
