@@ -226,7 +226,7 @@ for x, y, title in pairs:
     st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 3:  =========================
-st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione (Side by Side)")
+st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione")
 
 if search_names:
     radar_metrics = [
@@ -241,20 +241,28 @@ if search_names:
         "2024-25": stk2024
     }
 
-    cols = st.columns(len(seasons))  # crea 3 colonne affiancate
+    # Creo colonne affiancate per le 3 stagioni
+    cols = st.columns(len(seasons))
 
     for col, (season_name, df_season) in zip(cols, seasons.items()):
+        # Filtra solo i giocatori selezionati presenti in questa stagione
         df_selected = df_season[df_season["Nome"].isin(search_names)][["Nome"] + radar_metrics].copy()
         if df_selected.empty:
             col.info(f"Nessun giocatore selezionato in {season_name}.")
             continue
 
+        # Media se il giocatore compare più volte nella stessa stagione
         df_selected = df_selected.groupby("Nome")[radar_metrics].mean().reset_index()
 
+        # Trasforma in formato long (necessario per px.line_polar)
+        df_long = df_selected.melt(id_vars="Nome", value_vars=radar_metrics,
+                                   var_name="Metrica", value_name="Valore")
+
+        # Plot radar
         fig = px.line_polar(
-            df_selected,
-            r=radar_metrics,
-            theta=radar_metrics,
+            df_long,
+            r="Valore",
+            theta="Metrica",
             color="Nome",
             line_close=True,
             markers=True
@@ -262,11 +270,12 @@ if search_names:
         fig.update_traces(fill='toself')
         fig.update_layout(
             polar=dict(
-                radialaxis=dict(visible=True, range=[0, df_selected[radar_metrics].max().max()*1.1])
+                radialaxis=dict(visible=True, range=[0, df_long["Valore"].max()*1.1])
             ),
             showlegend=True,
             title=season_name
         )
+
         col.plotly_chart(fig, use_container_width=True)
 else:
     st.info("Seleziona almeno un giocatore per visualizzare il radar plot.")
