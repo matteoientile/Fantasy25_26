@@ -4,6 +4,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 #---------------- STREAMLIT HEADER
+st.set_page_config(page_title="Fantacalcio 25/26 - Attaccanti", layout="wide") 
 st.title("🎯 Attaccanti - Analisi Statistica")
 st.markdown("""
 In questa sezione analizziamo le performance degli attaccanti nelle ultime 3 stagioni di Serie A.
