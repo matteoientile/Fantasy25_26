@@ -33,17 +33,31 @@ df2022["xBonus"] = (3*df2022["xG"] + 1*df2022["xA"] + 3*df2022["Rp"] + 1*df2022[
 df2022["actualBonus"] = (3*df2022["Gf"] + 1*df2022["Ass"] + 3*df2022["Rp"] + 1*df2022["clean_sheet"]) - (2*df2022["Au"]+ 1*df2022["Gs"] + 1*df2022["Esp"] + 0.5*df2022["Amm"]+ df2022["R-"])
 df2022["xG + xA (pts converted)"] = (3*df2022["xG"] + 1*df2022["xA"])
 df2022["G + A (pts converted)"] = (3*df2022["Gf"] + 1*df2022["Ass"])
+df2022["% Gol/Tiri"] = df2022["Gf"]/df2022["shots"]
+df2022["Amm a partita"] = df2022["Amm"]/df2022["Pv"]
+df2022["Minuti a partita"] = df2022["time"]/df2022["games"]
+df2022["key_passes a partita"] = df2022["key_passes"]/df2022["games"]
+df2022["% Rigori Segnati"] = df2022["R+"]/df2022["Rc"]
 
 df2023["xBonus"] = (3*df2023["xG"] + 1*df2023["xA"] + 3*df2023["Rp"] + 1*df2023["clean_sheet"]) - (2*df2023["Au"]+ 1*df2023["Gs"] + 1*df2023["Esp"] + 0.5*df2023["Amm"] + df2023["R-"])
 df2023["actualBonus"] = (3*df2023["Gf"] + 1*df2023["Ass"] + 3*df2023["Rp"] + 1*df2023["clean_sheet"]) - (2*df2023["Au"]+ 1*df2023["Gs"] + 1*df2023["Esp"] + 0.5*df2023["Amm"] + df2023["R-"])
 df2023["xG + xA (pts converted)"] = (3*df2023["xG"] + 1*df2023["xA"])
 df2023["G + A (pts converted)"] = (3*df2023["Gf"] + 1*df2023["Ass"])
+df2023["% Gol/Tiri"] = df2023["Gf"]/df2023["shots"]
+df2023["Amm a partita"] = df2023["Amm"]/df2023["Pv"]
+df2023["Minuti a partita"] = df2023["time"]/df2023["games"]
+df2023["key_passes a partita"] = df2023["key_passes"]/df2023["games"]
+df2023["% Rigori Segnati"] = df2023["R+"]/df2023["Rc"]
 
 df2024["xBonus"] = (3*df2024["xG"] + 1*df2024["xA"] + 3*df2024["Rp"]+ 1*df2024["clean_sheet"]) - (2*df2024["Au"]+ 1*df2024["Gs"] + 1*df2024["Esp"] + 0.5*df2024["Amm"] + df2024["R-"])
 df2024["actualBonus"] = (3*df2024["Gf"] + 1*df2024["Ass"] + 3*df2024["Rp"] + 1*df2024["clean_sheet"]) - (2*df2024["Au"]+ 1*df2024["Gs"] + 1*df2024["Esp"] + 0.5*df2024["Amm"] + df2024["R-"])
 df2024["xG + xA (pts converted)"] = (3*df2024["xG"] + 1*df2024["xA"])
 df2024["G + A (pts converted)"] = (3*df2024["Gf"] + 1*df2024["Ass"])
-
+df2024["% Gol/Tiri"] = df2024["Gf"]/df2024["shots"]
+df2024["Amm a partita"] = df2024["Amm"]/df2024["Pv"]
+df2024["Minuti a partita"] = df2024["time"]/df2024["games"]
+df2024["key_passes a partita"] = df2024["key_passes"]/df2024["games"]
+df2024["% Rigori Segnati"] = df2024["R+"]/df2024["Rc"]
 #------------------------- PV FILTER
 min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
 
