@@ -268,13 +268,13 @@ if search_names:
         )
         fig.update_traces(fill='toself')
         fig.update_layout(
-    polar=dict(
-        radialaxis=dict(
-            visible=True,
-            range=[0, df_long["Valore"].max()*1.1],
-            tickfont=dict(color="black", size=12),  # <-- cambia il colore dei numeri
-            tickangle=0,
-            tickmode="linear"
+            polar=dict(
+                radialaxis=dict(
+                    visible=True,
+                    range=[0, df_long["Valore"].max()*1.1],
+                    tickfont=dict(color="black", size=12),  # <-- cambia il colore dei numeri
+                    tickangle=0,
+                    tickmode="linear"
         )
     ),
     showlegend=True,
