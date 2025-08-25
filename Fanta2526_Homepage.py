@@ -24,7 +24,7 @@ delle **ultime 3 stagioni di Serie A**.
 ➡️ Nessun problema! Ecco come leggere i grafici:
 """)
 
-with st.expander("🍕 Spiegazione semplice (anche se odi la statistica)"):
+with st.expander("🔢 SPIEGAZIONE SEMPLICE (anche se odi la statistica)"):
     st.markdown("""
     ### 🔗 Matrice di Correlazione
     - È una tabella che mostra quanto due statistiche vanno d’accordo.  
