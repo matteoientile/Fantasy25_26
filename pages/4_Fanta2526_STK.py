@@ -226,6 +226,7 @@ for x, y, title in pairs:
     st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 3:  =========================
+#========================= SECTION 3: RADAR PLOT NORMALIZZATO =========================
 st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione")
 
 if search_names:
@@ -253,9 +254,18 @@ if search_names:
         # Media se il giocatore compare più volte nella stessa stagione
         df_selected = df_selected.groupby("Nome")[radar_metrics].mean().reset_index()
 
+        # Normalizzazione: per ogni metrica il massimo tra i giocatori selezionati diventa 1
+        df_norm = df_selected.copy()
+        for metric in radar_metrics:
+            max_val = df_norm[metric].max()
+            if max_val != 0:
+                df_norm[metric] = df_norm[metric] / max_val
+            else:
+                df_norm[metric] = 0
+
         # Trasforma in formato long (necessario per px.line_polar)
-        df_long = df_selected.melt(id_vars="Nome", value_vars=radar_metrics,
-                                   var_name="Metrica", value_name="Valore")
+        df_long = df_norm.melt(id_vars="Nome", value_vars=radar_metrics,
+                               var_name="Metrica", value_name="Valore")
 
         # Plot radar
         fig = px.line_polar(
@@ -269,17 +279,11 @@ if search_names:
         fig.update_traces(fill='toself')
         fig.update_layout(
             polar=dict(
-                radialaxis=dict(
-                    visible=True,
-                    range=[0, df_long["Valore"].max()*1.1],
-                    tickfont=dict(color="black", size=12),  # <-- cambia il colore dei numeri
-                    tickangle=0,
-                    tickmode="linear"
+                radialaxis=dict(visible=True, range=[0, 1], tickfont=dict(color="black"))
+            ),
+            showlegend=True,
+            title=season_name
         )
-    ),
-    showlegend=True,
-    title=season_name
-)
 
         col.plotly_chart(fig, use_container_width=True)
 else:
