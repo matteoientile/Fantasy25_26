@@ -200,7 +200,67 @@ for x, y, title in pairs:
 
     st.plotly_chart(fig, use_container_width=True)
 
-#========================= SECTION 3:  =========================
+#========================= SECTION 3: RADAR PLOT NORMALIZZATO =========================
+st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione")
+
+if search_names:
+    radar_metrics = [
+        "Pv", "Mv", "Fm", "Gs a partita", "clean_sheet", "Rp"
+    ]
+
+    seasons = {
+        "2022-23": gk2022,
+        "2023-24": gk2023,
+        "2024-25": gk2024
+    }
+
+    # Creo colonne affiancate per le 3 stagioni
+    cols = st.columns(len(seasons))
+
+    for col, (season_name, df_season) in zip(cols, seasons.items()):
+        # Filtra solo i giocatori selezionati presenti in questa stagione
+        df_selected = df_season[df_season["Nome"].isin(search_names)][["Nome"] + radar_metrics].copy()
+        if df_selected.empty:
+            col.info(f"Nessun giocatore selezionato in {season_name}.")
+            continue
+
+        df_selected = df_selected.groupby("Nome")[radar_metrics].mean().reset_index()
+
+        # Normalizzazione: per ogni metrica il massimo tra i giocatori selezionati diventa 1
+        df_norm = df_selected.copy()
+        for metric in radar_metrics:
+            max_val = df_norm[metric].max()
+            if max_val != 0:
+                df_norm[metric] = df_norm[metric] / max_val
+            else:
+                df_norm[metric] = 0
+
+        # Trasforma in formato long (necessario per px.line_polar)
+        df_long = df_norm.melt(id_vars="Nome", value_vars=radar_metrics,
+                               var_name="Metrica", value_name="Valore")
+
+        # Plot radar
+        fig = px.line_polar(
+            df_long,
+            r="Valore",
+            theta="Metrica",
+            color="Nome",
+            line_close=True,
+            markers=True
+        )
+        fig.update_traces(fill='toself')
+        fig.update_layout(
+            polar=dict(
+                radialaxis=dict(visible=True, range=[0, 1], tickfont=dict(color="black"))
+            ),
+            showlegend=True,
+            title=season_name
+        )
+
+        col.plotly_chart(fig, use_container_width=True)
+else:
+    st.info("Seleziona almeno un giocatore per visualizzare il radar plot.")
+
 
 #========================= SECTION X: OTHER METRICS =========================
 st.header("⚡ Altre metriche")
