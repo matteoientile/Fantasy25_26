@@ -226,6 +226,50 @@ for x, y, title in pairs:
     st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 3:  =========================
+st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione (Side by Side)")
+
+if search_names:
+    radar_metrics = [
+        "Mv", "Fm", "Gf", "Ass", "xG_per90", "xA_per90",
+        "key_passes a partita", "Tiri a partita", "G + A (pts converted)",
+        "Amm a partita", "% Gol/Tiri"
+    ]
+
+    seasons = {
+        "2022-23": stk2022,
+        "2023-24": stk2023,
+        "2024-25": stk2024
+    }
+
+    cols = st.columns(len(seasons))  # crea 3 colonne affiancate
+
+    for col, (season_name, df_season) in zip(cols, seasons.items()):
+        df_selected = df_season[df_season["Nome"].isin(search_names)][["Nome"] + radar_metrics].copy()
+        if df_selected.empty:
+            col.info(f"Nessun giocatore selezionato in {season_name}.")
+            continue
+
+        df_selected = df_selected.groupby("Nome")[radar_metrics].mean().reset_index()
+
+        fig = px.line_polar(
+            df_selected,
+            r=radar_metrics,
+            theta=radar_metrics,
+            color="Nome",
+            line_close=True,
+            markers=True
+        )
+        fig.update_traces(fill='toself')
+        fig.update_layout(
+            polar=dict(
+                radialaxis=dict(visible=True, range=[0, df_selected[radar_metrics].max().max()*1.1])
+            ),
+            showlegend=True,
+            title=season_name
+        )
+        col.plotly_chart(fig, use_container_width=True)
+else:
+    st.info("Seleziona almeno un giocatore per visualizzare il radar plot.")
 
 #========================= SECTION X: OTHER METRICS =========================
 st.header("⚡ Altre metriche")
