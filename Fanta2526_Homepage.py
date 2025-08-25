@@ -47,7 +47,7 @@ with st.expander("🔢 SPIEGAZIONE SEMPLICE (anche se odi la statistica)"):
     - Ogni puntino = un giocatore.  
     - La posizione dice **come combina due statistiche** (es. tiri vs gol).  
     - La linea indica la tendenza generale: se sale → chi tira di più segna di più.  
-    👉 Ti aiuta a capire se una statistica può “predire” un’altra.
+    👉 Serve per confrontare coppie di statistiche, e capirne la relazione
     """)
 
 
