@@ -198,6 +198,7 @@ pairs = [
     ("xG + xA (pts converted)", "G + A (pts converted)", "📈 xBonus vs Bonus - Attaccanti 2022-2024"),
     ("xG", "Gf", "📈 xG vs Gol Fatti - Attaccanti 2022-2024"),
     ("xA", "Ass", "📈 xA vs Assist - Attaccanti 2022-2024"),
+    ("key_passes", "xA", "📈 Passaggi Chiave vs xAssist - Attaccanti 2022-2024")
 ]
 
 for x, y, title in pairs:
