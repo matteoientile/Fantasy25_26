@@ -85,16 +85,6 @@ st.plotly_chart(fig, use_container_width=True)
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Portieri")
 
-metrics = ["Mv", "Fm", "Gs", "Gs a partita", "clean_sheet", "Amm", "Esp"]
-for metric in metrics:
-    st.subheader(f"{metric} - Boxplot 2022-2024")
-    
-    fig = make_subplots(
-        rows=1, cols=3,
-        subplot_titles=("2022", "2023", "2024"),
-        horizontal_spacing=0.15
-    )
-
 def add_boxplot(fig, df, col, metric):
     # Base boxplot
     box = px.violin(
@@ -124,9 +114,19 @@ def add_boxplot(fig, df, col, metric):
                 row=1, col=col
             )
 
-    add_boxplot(fig, gk2022, col=1)
-    add_boxplot(fig, gk2023, col=2)
-    add_boxplot(fig, gk2024, col=3)
+metrics = ["Mv", "Fm", "Gs", "Gs a partita", "clean_sheet", "Amm", "Esp"]
+for metric in metrics:
+    st.subheader(f"{metric} - Boxplot 2022-2024")
+    
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=("2022", "2023", "2024"),
+        horizontal_spacing=0.15
+    )
+
+    add_boxplot(fig, gk2022, col=1, metric=metric)
+    add_boxplot(fig, gk2023, col=2, metric=metric)
+    add_boxplot(fig, gk2024, col=3, metric=metric)
 
     fig.update_layout(
         height=500, width=1200,
