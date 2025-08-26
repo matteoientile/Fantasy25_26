@@ -195,13 +195,12 @@ def add_scatter(fig, df, x, y, col):
 
 # Variabili da confrontare
 pairs = [
-    ("Mv", "Amm", "📈 Mv vs Amm - Centrocampisti 2022-2024"),
     ("Mv", "Fm", "📈 Mv vs Fm - Centrocampisti 2022-2024"),
     ("shots", "Gf", "📈 Tiri vs Gf - Centrocampisti 2022-2024"),
-    ("xG + xA (pts converted)", "G + A (pts converted)", "📈 xBonus vs Bonus - Centrocampisti 2022-2024"),
+    ("shots", "Fm", "📈 Tiri vs Fm - Centrocampisti 2022-2024"),
     ("xG", "Gf", "📈 xG vs Gol Fatti - Centrocampisti 2022-2024"),
     ("xA", "Ass", "📈 xA vs Assist - Centrocampisti 2022-2024"),
-    ("key_passes", "xA", "📈 Passaggi Chiave vs xAssist - Centrocampisti 2022-2024")
+    ("key_passes", "Ass", "📈 Passaggi Chiave vs Ass - Centrocampisti 2022-2024")
 ]
 
 for x, y, title in pairs:
