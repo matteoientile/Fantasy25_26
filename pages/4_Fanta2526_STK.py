@@ -345,7 +345,7 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
     fig.update_traces(marker=dict(size=12, line=dict(width=1, color='DarkSlateGrey')))
     st.plotly_chart(fig, use_container_width=True)
 
-st.header("📐 Clustering Attaccanti")
+st.header("🎯 Clustering Attaccanti")
 numericalCols_stk = ["Pv", "Mv", "Fm", "Gf", "Ass", "Amm", "Esp", "xG", "xA", "% Gol/Tiri", "shots", "key_passes", "xGBuildup", "xGChain", "Minuti a partita"]
 n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 6, 3)
 
