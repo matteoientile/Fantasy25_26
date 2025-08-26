@@ -65,6 +65,7 @@ df2024["Minuti a partita"] = df2024["time"]/df2024["games"]
 df2024["Tiri a partita"] = df2024["shots"]/df2024["games"]
 df2024["key_passes a partita"] = df2024["key_passes"]/df2024["games"]
 df2024["% Rigori Segnati"] = df2024["R+"]/df2024["Rc"]
+df2024["Gf a partita"] = df2024["Gf"]/df2024["Pv"]
 #------------------------- PV FILTER
 min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
 
@@ -197,10 +198,12 @@ def add_scatter(fig, df, x, y, col):
 pairs = [
     ("Mv", "Fm", "📈 Mv vs Fm - Attaccanti 2022-2024"),
     ("shots", "Gf", "📈 Tiri vs Gf - Attaccanti 2022-2024"),
-    ("xG + xA (pts converted)", "G + A (pts converted)", "📈 xBonus vs Bonus - Attaccanti 2022-2024"),
+    ("shots", "Fm", "📈 Tiri vs Fm - Attaccanti 2022-2024"),
     ("xG", "Gf", "📈 xG vs Gol Fatti - Attaccanti 2022-2024"),
-    ("xA", "Ass", "📈 xA vs Assist - Attaccanti 2022-2024"),
-    ("key_passes", "xA", "📈 Passaggi Chiave vs xAssist - Attaccanti 2022-2024")
+    ("xG", "Fm", "📈 xG vs Fm - Attaccanti 2022-2024"),
+    ("xA", "Ass", "📈 xA vs Assist - Attaccanti 2022-2024")
+    ("Tiri a partita", "Gf a partita", "📈 Tiri vs Gf - Attaccanti 2022-2024"),
+    ("Tiri a partita", "Fm", "📈 Tiri vs Fm - Attaccanti 2022-2024"),
 ]
 
 for x, y, title in pairs:
