@@ -295,8 +295,8 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
         y="PCA2",
         color="cluster",
         hover_data=["Nome", "Squadra", "Pv", "Fm"],
-        title=f"Cluster {ruolo}",
-        color_discrete_sequence=color_sequence
+        title=f"Cluster {ruolo}"
+        #color_discrete_sequence=color_sequence
     )
 
     # Highlight selected players
