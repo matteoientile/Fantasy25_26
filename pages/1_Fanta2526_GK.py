@@ -262,5 +262,73 @@ else:
     st.info("Seleziona almeno un giocatore per visualizzare il radar plot.")
 
 
+#========================= SECTION 4: "FASCE" CLUSTERING =========================
+
+#FUNCTION
+def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
+    df = df.copy() 
+    df_filled = df[numericalCols].fillna(0)
+    
+    # Standardization
+    scaler = StandardScaler()
+    df_scaled = scaler.fit_transform(df_filled)
+    
+    # Fit KMeans on scaled data
+    model = KMeans(n_clusters=nclusters, random_state=42)
+    df.loc[:, "cluster"] = model.fit_predict(df_scaled)
+
+    # PCA on scaled data
+    pca = PCA(n_components=2)
+    pca_result = pca.fit_transform(df_scaled)
+    df["PCA1"] = pca_result[:, 0]
+    df["PCA2"] = pca_result[:, 1]
+
+    # Plotly scatter
+    fig = px.scatter(
+        df,
+        x="PCA1",
+        y="PCA2",
+        color="cluster",
+        hover_data=["Nome", "Squadra", "Pv", "Fm"],
+        title=f"Cluster {ruolo}",
+        color_discrete_sequence=px.colors.qualitative.Set1
+    )
+
+    # Highlight selected players
+    if highlight_names is not None:
+        for i, name in enumerate(highlight_names):
+            highlight = df[df["Nome"] == name]
+            if not highlight.empty:
+                fig.add_trace(
+                    px.scatter(
+                        highlight,
+                        x="PCA1",
+                        y="PCA2",
+                        hover_name="Nome"
+                    ).update_traces(
+                        marker=dict(size=15, color='black', symbol='star'),
+                        name=name,
+                        showlegend=True
+                    ).data[0]
+                )
+
+    fig.update_traces(marker=dict(size=12, line=dict(width=1, color='DarkSlateGrey')))
+    st.plotly_chart(fig, use_container_width=True)
+
+st.header("🧤 Clustering Portieri")
+
+# Sidebar options for clustering
+n_clusters = st.slider("Numero di cluster (KMeans)", 2, 6, 3)
+
+if st.button("Esegui clustering portieri 2024"):
+    KmeansPCA(
+        gk2024,                    # Last season dataframe
+        numericalCols_gk,          # Your selected numeric columns
+        n_clusters, 
+        ruolo="Portieri 2024",
+        highlight_names=search_names # Highlight selected players
+    )
+
+
 #========================= SECTION X: OTHER METRICS =========================
 st.header("⚡ Altre metriche")
