@@ -347,7 +347,7 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
 
 st.header("🎯 Clustering Attaccanti")
 numericalCols_stk = ["Pv", "Mv", "Fm", "Gf", "Ass", "Amm", "Esp", "xG", "xA", "% Gol/Tiri", "shots", "key_passes", "xGBuildup", "xGChain", "Minuti a partita"]
-n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 6, 3)
+n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 8, 3)
 
 if st.button("Esegui clustering portieri 2024"):
     KmeansPCA(
