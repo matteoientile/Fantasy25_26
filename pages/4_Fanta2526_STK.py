@@ -201,7 +201,7 @@ pairs = [
     ("shots", "Fm", "📈 Tiri vs Fm - Attaccanti 2022-2024"),
     ("xG", "Gf", "📈 xG vs Gol Fatti - Attaccanti 2022-2024"),
     ("xG", "Fm", "📈 xG vs Fm - Attaccanti 2022-2024"),
-    ("xA", "Ass", "📈 xA vs Assist - Attaccanti 2022-2024")
+    ("xA", "Ass", "📈 xA vs Assist - Attaccanti 2022-2024"),
     ("Tiri a partita", "Gf a partita", "📈 Tiri vs Gf - Attaccanti 2022-2024"),
     ("Tiri a partita", "Fm", "📈 Tiri vs Fm - Attaccanti 2022-2024"),
 ]
