@@ -285,6 +285,9 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
     df["PCA1"] = pca_result[:, 0]
     df["PCA2"] = pca_result[:, 1]
 
+    # Palette colori vividi
+    color_sequence = px.colors.qualitative.Vivid  # o px.colors.qualitative.Dark24 se vuoi più opzioni
+
     # Plotly scatter
     fig = px.scatter(
         df,
@@ -293,7 +296,7 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
         color="cluster",
         hover_data=["Nome", "Squadra", "Pv", "Fm"],
         title=f"Cluster {ruolo}",
-        color_discrete_sequence=px.colors.qualitative.Set1
+        color_discrete_sequence=color_sequence
     )
 
     # Highlight selected players
@@ -316,6 +319,7 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
 
     fig.update_traces(marker=dict(size=12, line=dict(width=1, color='DarkSlateGrey')))
     st.plotly_chart(fig, use_container_width=True)
+
 
 st.header("🧤 Clustering Portieri")
 numericalCols_gk = ["Pv", "Mv", "Fm", "Gs", "Rp", "clean_sheet"]
