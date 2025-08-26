@@ -225,10 +225,10 @@ def add_scatter(fig, df, x, y, col):
 
 # Variabili da confrontare
 pairs = [
-    ("Mv", "Amm", "📈 Mv vs Amm - Difensori 2022-2024"),
+    ("Pv", "Mv", "📈 Mv vs Amm - Difensori 2022-2024"),
     ("Mv", "Fm", "📈 Mv vs Fm - Difensori 2022-2024"),
+    ("shots", "Fm", "📈 Tiri vs Fm - Difensori 2022-2024"),
     ("shots", "Gf", "📈 Tiri vs Gf - Difensori 2022-2024"),
-    ("xG + xA (pts converted)", "G + A (pts converted)", "📈 xBonus vs Bonus - Difensori 2022-2024"),
     ("xG", "Gf", "📈 xG vs Gol Fatti - Difensori 2022-2024"),
     ("xA", "Ass", "📈 xA vs Assist - Difensori 2022-2024"),
     ("key_passes", "xA", "📈 Passaggi Chiave vs xAssist - Difensori 2022-2024")
