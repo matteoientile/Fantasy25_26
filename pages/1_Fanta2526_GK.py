@@ -316,7 +316,7 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
     st.plotly_chart(fig, use_container_width=True)
 
 st.header("🧤 Clustering Portieri")
-
+numericalCols = ["Pv", "Mv", "Fm", "Gs", "Rp", "clean_sheet"]
 # Sidebar options for clustering
 n_clusters = st.slider("Numero di cluster (KMeans)", 2, 6, 3)
 
