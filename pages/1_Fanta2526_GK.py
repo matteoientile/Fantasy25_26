@@ -270,21 +270,25 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
     df = df.copy() 
     df_filled = df[numericalCols].fillna(0)
     
+    # Standardization
     scaler = StandardScaler()
     df_scaled = scaler.fit_transform(df_filled)
     
+    # Fit KMeans on scaled data
     model = KMeans(n_clusters=nclusters, random_state=42)
-    df.loc[:, "cluster"] = model.fit_predict(df_scaled)
-
+    df["cluster"] = model.fit_predict(df_scaled).astype(str)  # Convert cluster to string
+    
+    # PCA on scaled data
     pca = PCA(n_components=2)
     pca_result = pca.fit_transform(df_scaled)
     df["PCA1"] = pca_result[:, 0]
     df["PCA2"] = pca_result[:, 1]
-
-    # Palette custom vivida e contrastante
+    
+    # Define vivid colors for clusters
     vivid_colors = ["#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6"]
     color_sequence = [vivid_colors[i % len(vivid_colors)] for i in range(nclusters)]
-
+    
+    # Plotly scatter
     fig = px.scatter(
         df,
         x="PCA1",
@@ -295,7 +299,8 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
         color_discrete_sequence=color_sequence
     )
 
-    if highlight_names is not None:
+    # Highlight selected players
+    if highlight_names:
         for i, name in enumerate(highlight_names):
             highlight = df[df["Nome"] == name]
             if not highlight.empty:
@@ -311,7 +316,7 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
                         showlegend=True
                     ).data[0]
                 )
-
+    
     fig.update_traces(marker=dict(size=12, line=dict(width=1, color='DarkSlateGrey')))
     st.plotly_chart(fig, use_container_width=True)
 
