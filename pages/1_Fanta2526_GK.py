@@ -320,7 +320,7 @@ def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
 st.header("🧤 Clustering Portieri")
 numericalCols_gk = ["Pv", "Mv", "Fm", "Gs", "Rp", "clean_sheet"]
 # Sidebar options for clustering
-n_clusters = st.slider("Numero di cluster (KMeans)", 2, 6, 3)
+n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 6, 3)
 
 if st.button("Esegui clustering portieri 2024"):
     KmeansPCA(
