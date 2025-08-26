@@ -173,7 +173,7 @@ def add_scatter(fig, df, x, y, col):
 # Variabili da confrontare
 pairs = [
     ("Mv", "Fm", "📈 Mv vs Fm - Portieri 2022-2024"),
-    ("clean_sheet", "Fm", "📈 Clean Sheet vs Fm - Portieri 2022-2024")
+    ("clean_sheet", "Fm", "📈 Clean Sheet vs Fm - Portieri 2022-2024"),
     ("Gs", "Fm", "📈 Gs vs Fm - Portieri 2022-2024")
 ]
 
