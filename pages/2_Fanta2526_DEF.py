@@ -74,6 +74,36 @@ def2022 = df2022[df2022["R"] == "D"]
 def2023 = df2023[df2023["R"] == "D"]
 def2024 = df2024[df2024["R"] == "D"]
 
+# 22/23 clean sheets
+cs_2022 = {
+    "Atalanta": 8, "Bologna": 8, "Cremonese": 5, "Empoli": 9, "Fiorentina": 6,
+    "Inter": 12, "Juventus": 19, "Lazio": 21, "Lecce": 6, "Milan": 12,
+    "Monza": 10, "Napoli": 20, "Roma": 14, "Salernitana": 10, "Sampdoria": 4,
+    "Sassuolo": 9, "Spezia": 6, "Torino": 11, "Udinese": 10, "Verona": 6
+}
+
+# 23/24 clean sheets
+cs_2023 = {
+    "Atalanta": 14, "Bologna": 17, "Cagliari": 5, "Empoli": 9, "Fiorentina": 8,
+    "Frosinone": 6, "Genoa": 8, "Inter": 21, "Juventus": 16, "Lazio": 13,
+    "Lecce": 7, "Milan": 12, "Monza": 12, "Napoli": 6, "Roma": 11, "Salernitana": 2,
+    "Sassuolo": 3, "Torino": 18, "Udinese": 9, "Verona": 8
+}
+
+# 24/25 clean sheets
+cs_2024 = {
+    "Atalanta": 14, "Bologna": 12, "Cagliari": 8, "Como": 7, "Empoli": 6,
+    "Fiorentina": 12, "Genoa": 10, "Inter": 16, "Juventus": 17, "Lazio": 9,
+    "Lecce": 9, "Milan": 12, "Monza": 3, "Napoli": 17, "Parma": 7,
+    "Roma": 17, "Torino": 10, "Udinese": 9, "Venezia": 6, "Verona": 8
+}
+
+# Map to DataFrames
+def2022["clean_sheet_def"] = def2022["Squadra"].map(cs_2022)
+def2023["clean_sheet_def"] = def2023["Squadra"].map(cs_2023)
+def2024["clean_sheet_def"] = def2024["Squadra"].map(cs_2024)
+
+
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([def2022["Nome"], def2023["Nome"], def2024["Nome"]]).unique()
 search_names = st.multiselect("Seleziona uno o più portieri da evidenziare", options=sorted(all_names), default=[])
