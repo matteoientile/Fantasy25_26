@@ -33,7 +33,7 @@ df_stats["Over/Under performance %"] = np.where(
     ),
     np.nan
 )
-df_stats["Over/Under performance %"] = rounddf_stats["Over/Under performance %"].fillna("-")
+df_stats["Over/Under performance %"] = df_stats["Over/Under performance %"].fillna("-")
 
 # Seleziona solo le colonne utili dalle stats
 cols_stats = [
