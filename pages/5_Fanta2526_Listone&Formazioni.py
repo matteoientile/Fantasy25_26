@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+
 #---------------- STREAMLIT HEADER
 st.set_page_config(page_title="Fantacalcio 25/26 - Listone & Probabili Formazioni", layout="wide") 
 st.title("📋 Listone Stagione 25/26 & ⚽ Probabili Formazioni ")
@@ -9,6 +10,7 @@ Qui troverai
 - il Listone Fantagazzetta per l'asta 25/26
 - i Link ai migliori siti per le Probabili Formazioni di Serie A
 """)
+
 #========================= SIDEBAR: INDEX =========================
 st.sidebar.header("📌 Indice")
 st.sidebar.markdown("""
@@ -22,7 +24,8 @@ st.header("📋 Listone Stagione 25/26 (con statistiche 24/25)")
 # Carica i file
 df_listone = pd.read_excel("Quotazioni_Fantacalcio_Stagione_2025_26.xlsx")
 df_stats = pd.read_excel("2024_25_Merged.xlsx")
-#Aggiunta OverUnder performance
+
+# Aggiunta Over/Under performance
 df_stats["xG + xA (pts converted)"] = 3*df_stats["xG"] + 1*df_stats["xA"]
 df_stats["G + A (pts converted)"] = 3*df_stats["Gf"] + 1*df_stats["Ass"]
 df_stats["Over/Under performance %"] = np.where(
@@ -63,10 +66,10 @@ df_listone = df_listone.merge(df_stats, on="Nome", how="left")
 stat_cols = [c for c in df_stats.columns if c != "Nome"]
 df_listone[stat_cols] = df_listone[stat_cols].fillna("-")
 
-# Filtri
+#========================= FILTRI =========================
+# Filtra per ruolo
 ruoli = ["Tutti", "P", "D", "C", "A"]  
 ruolo_sel = st.selectbox("Filtra per Ruolo", ruoli)
-
 if ruolo_sel != "Tutti":
     df_listone = df_listone[df_listone["R"] == ruolo_sel]
 
@@ -75,10 +78,18 @@ search = st.text_input("🔍 Cerca un giocatore per nome")
 if search:
     df_listone = df_listone[df_listone["Nome"].str.contains(search, case=False, na=False)]
 
-# Ordinamento
+#========================= ORDINAMENTO =========================
 sort_col = st.selectbox("Ordina per", df_listone.columns)
 ascending = st.radio("Ordine", ["Crescente", "Decrescente"]) == "Crescente"
-df_listone = df_listone.sort_values(by=sort_col, ascending=ascending)
 
-# Mostra tabella
+# Gestione colonne con "-" per lo sort
+if sort_col in stat_cols:
+    # Crea colonna temporanea numerica per ordinamento
+    df_listone["_sort_temp"] = pd.to_numeric(df_listone[sort_col], errors="coerce")
+    df_listone = df_listone.sort_values(by="_sort_temp", ascending=ascending)
+    df_listone = df_listone.drop(columns="_sort_temp")
+else:
+    df_listone = df_listone.sort_values(by=sort_col, ascending=ascending)
+
+#========================= MOSTRA TABELLA =========================
 st.dataframe(df_listone.reset_index(drop=True), use_container_width=True)
