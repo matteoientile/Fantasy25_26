@@ -204,7 +204,8 @@ def add_scatter(fig, df, x, y, col):
 pairs = [
     ("Mv", "Fm", "📈 Mv vs Fm - Attaccanti 2022-2024"),
     ("shots", "Gf", "📈 Tiri vs Gf - Attaccanti 2022-2024"),
-    ("shots", "Fm", "📈 Tiri vs Fm - Attaccanti 2022-2024"),
+    ("Tiri a partita", "Fm", "📈 Tiri a partita vs Fm - Attaccanti 2022-2024"),
+    ("Gf", "Ass", "📈 Gol Fatti vs Assist - Attaccanti 2022-2024"),
     ("xG", "Gf", "📈 xG vs Gol Fatti - Attaccanti 2022-2024"),
     ("xG", "Fm", "📈 xG vs Fm - Attaccanti 2022-2024"),
     ("xA", "Ass", "📈 xA vs Assist - Attaccanti 2022-2024"),
