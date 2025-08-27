@@ -83,10 +83,6 @@ mid2022 = df2022[df2022["R"]=="C"]
 mid2023 = df2023[df2023["R"]=="C"]
 mid2024 = df2024[df2024["R"]=="C"]
 
-st.write(mid2022.columns)
-st.write(mid2023.columns)
-st.write(mid2024.columns)
-
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([mid2022["Nome"], mid2023["Nome"], mid2024["Nome"]]).unique()
 search_names = st.multiselect("Seleziona uno o più centrocampisti da **confrontare**", options=sorted(all_names), default=[])
