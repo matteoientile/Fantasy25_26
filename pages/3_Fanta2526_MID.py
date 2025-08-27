@@ -126,10 +126,22 @@ def add_scatter(fig, df, x, y, col):
 
 pairs = [("Mv","Fm"),("shots","Gf"),("Tiri a partita","Fm"),("Gf","Ass"),("xG","Gf"),("xA","Ass"),("key_passes","Ass"),("Tiri a partita","Gf a partita"),("Gf","R+")]
 
-for x,y in pairs:
-    fig = make_subplots(rows=1,cols=3,subplot_titles=("2022","2023","2024"),horizontal_spacing=0.1)
-    for col,df in zip([1,2,3],[mid2022,mid2023,mid2024]):
+for x, y in pairs:
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=("2022", "2023", "2024"),
+        horizontal_spacing=0.1
+    )
+    for col, df in zip([1, 2, 3], [mid2022, mid2023, mid2024]):
         add_scatter(fig, df, x, y, col)
-    fig.update_layout(height=500,width=1600,showlegend=True,title=f"{x} vs {y} - Centrocampisti 2022-2024")
-    fig.update_xaxes(title_text=x,row=1,col=1)
-    fig.update_xaxes(title_text=x,row=1,col=
+    fig.update_layout(
+        height=500,
+        width=1600,
+        showlegend=True,
+        title=f"{x} vs {y} - Centrocampisti 2022-2024"
+    )
+    for col in [1, 2, 3]:
+        fig.update_xaxes(title_text=x, row=1, col=col)
+        fig.update_yaxes(title_text=y, row=1, col=col)
+    
+    st.plotly_chart(fig, use_container_width=True)
