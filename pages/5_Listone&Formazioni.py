@@ -108,6 +108,6 @@ Per consultare le formazioni tipo aggiornate squadra per squadra, visita i segue
 
 - [Formazioni tipo Serie A 2025/26 – SOS Fanta](https://www.sosfanta.com/asta-fantacalcio/formazioni-tipo-serie-a-2025-2026-oggi-giocherebbero-cosi/)
 - [Probabili formazioni Serie A 2025/26 – Fantacalcio.it](https://www.fantacalcio.it/news/calcio-italia/29_07_2025/asta-fantacalcio-le-probabili-formazioni-della-serie-a-enilive-2025-26-480206)
-- [Formazioni Titolari Fantacalcio 2025/26 – Fantacalcio.it](https://www.goal.com/it/liste/fantacalcio-formazioni-titolari-serie-a-2025-2026-tutte-le-squadre-tipo/bltd96a64fe7af82a71#csfc709a336b92e528)
+- [Formazioni Titolari Fantacalcio 2025/26 – Goal.com](https://www.goal.com/it/liste/fantacalcio-formazioni-titolari-serie-a-2025-2026-tutte-le-squadre-tipo/bltd96a64fe7af82a71#csfc709a336b92e528)
 """)
 
