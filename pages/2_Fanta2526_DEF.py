@@ -17,6 +17,7 @@ Utilizzeremo i seguenti simboli:
 - Pv = Partite a Voto
 - Gf = Gol Fatti
 - Ass = Assist
+- clean_sheet_def = Partite con 0 Gol Subiti 
 - xG_per90 = Expected Goals per 90 Minuti
 - xA_per90 = Expected Assist per 90 Minuti
 - key_passess = Passaggi Chiave
