@@ -1,65 +1,94 @@
 import streamlit as st
-for c in required_cols:
-if c in df.columns:
-df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0)
-else:
-df[c] = 0
-if weights is None:
-weights = {
-'g': 3, 'a': 1, 'rp': 3, 'cs': 1,
-'au': 2, 'gs': 1, 'esp': 1, 'amm': 0.5, 'r-': 1
-}
-df["xBonus"] = (
-weights['g'] * df["xG"] +
-weights['a'] * df["xA"] +
-weights['rp'] * df["Rp"] +
-weights['cs'] * df["clean_sheet"]
-) - (
-weights['au'] * df["Au"] +
-weights['gs'] * df["Gs"] +
-weights['esp'] * df["Esp"] +
-weights['amm'] * df["Amm"] +
-weights['r-'] * df["R-"]
-)
-df["actualBonus"] = (
-weights['g'] * df["Gf"] +
-weights['a'] * df["Ass"] +
-weights['rp'] * df["Rp"] +
-weights['cs'] * df["clean_sheet"]
-) - (
-weights['au'] * df["Au"] +
-weights['gs'] * df["Gs"] +
-weights['esp'] * df["Esp"] +
-weights['amm'] * df["Amm"] +
-weights['r-'] * df["R-"]
-)
-df["xG + xA (pts converted)"] = weights['g'] * df["xG"] + weights['a'] * df["xA"]
-df["G + A (pts converted)"] = weights['g'] * df["Gf"] + weights['a'] * df["Ass"]
-df["Gs a partita"] = df["Gs"] / df["Pv"].replace({0: pd.NA})
-if fill_pv_zero:
-df["Gs a partita"] = df["Gs a partita"].fillna(0)
-if season_label is not None:
-df["season"] = season_label
-return df
+import pandas as pd
+import plotly.express as px
+from plotly.subplots import make_subplots
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 
+#---------------- STREAMLIT HEADER
+st.set_page_config(page_title="Fantacalcio 25/26 - Portieri", layout="wide") 
+st.title("🧤 Portieri - Analisi Statistica")
+st.markdown("""
+In questa sezione analizziamo le performance dei portieri nelle ultime 3 stagioni di Serie A.
+
+Utilizzeremo i seguenti simboli:
+- Mv = Media Voto
+- Fm = Fanta Media
+- Gs = Gol Subiti
+- Pv = Partite a Voto
+- clean_sheet = Partite a Rete Inviolata
+- Amm = Ammonizioni
+- Esp = Espulsioni
+""")
+
+#---------------- FUNZIONE PER AGGIUNGERE METRICHE
+
+def add_metrics(df, weights=None, fill_missing=True, fill_pv_zero=True, season_label=None):
+    df = df.copy()
+    required_cols = ["xG", "xA", "Rp", "clean_sheet", "Au", "Gs", "Esp", "Amm", "R-", "Gf", "Ass", "Pv"]
+    if fill_missing:
+        for c in required_cols:
+            if c not in df.columns:
+                df[c] = 0
+    for c in required_cols:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors='coerce').fillna(0)
+        else:
+            df[c] = 0
+    if weights is None:
+        weights = {
+            'g': 3, 'a': 1, 'rp': 3, 'cs': 1,
+            'au': 2, 'gs': 1, 'esp': 1, 'amm': 0.5, 'r-': 1
+        }
+    df["xBonus"] = (
+        weights['g'] * df["xG"] +
+        weights['a'] * df["xA"] +
+        weights['rp'] * df["Rp"] +
+        weights['cs'] * df["clean_sheet"]
+    ) - (
+        weights['au'] * df["Au"] +
+        weights['gs'] * df["Gs"] +
+        weights['esp'] * df["Esp"] +
+        weights['amm'] * df["Amm"] +
+        weights['r-'] * df["R-"]
+    )
+    df["actualBonus"] = (
+        weights['g'] * df["Gf"] +
+        weights['a'] * df["Ass"] +
+        weights['rp'] * df["Rp"] +
+        weights['cs'] * df["clean_sheet"]
+    ) - (
+        weights['au'] * df["Au"] +
+        weights['gs'] * df["Gs"] +
+        weights['esp'] * df["Esp"] +
+        weights['amm'] * df["Amm"] +
+        weights['r-'] * df["R-"]
+    )
+    df["xG + xA (pts converted)"] = weights['g'] * df["xG"] + weights['a'] * df["xA"]
+    df["G + A (pts converted)"] = weights['g'] * df["Gf"] + weights['a'] * df["Ass"]
+    df["Gs a partita"] = df["Gs"] / df["Pv"].replace({0: pd.NA})
+    if fill_pv_zero:
+        df["Gs a partita"] = df["Gs a partita"].fillna(0)
+    if season_label is not None:
+        df["season"] = season_label
+    return df
 
 #---------------- LETTURA FILES + PREPARAZIONE
 
-
 drop_columns = ["Id", "id", "goals", "assists", "yellow_cards", "red_cards", "matched"]
-
 
 @st.cache_data
 def load_and_prepare(path, season_label=None):
-df = pd.read_excel(path)
-df = df.drop(columns=drop_columns, errors='ignore')
-df = add_metrics(df, season_label=season_label)
-return df
-
+    df = pd.read_excel(path)
+    df = df.drop(columns=drop_columns, errors='ignore')
+    df = add_metrics(df, season_label=season_label)
+    return df
 
 df2022 = load_and_prepare("2022_23_Merged.xlsx", season_label="2022-23")
 df2023 = load_and_prepare("2023_24_Merged.xlsx", season_label="2023-24")
 df2024 = load_and_prepare("2024_25_Merged.xlsx", season_label="2024-25")
+
 #------------------------- PV FILTER
 min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
 
@@ -70,6 +99,7 @@ df2024 = df2024[df2024["Pv"] >= min_pv]
 gk2022 = df2022[df2022["R"] == "P"]
 gk2023 = df2023[df2023["R"] == "P"]
 gk2024 = df2024[df2024["R"] == "P"]
+
 
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([gk2022["Nome"], gk2023["Nome"], gk2024["Nome"]]).unique()
