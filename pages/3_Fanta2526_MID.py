@@ -241,3 +241,56 @@ for x,y in pairs:
         st.plotly_chart(fig, use_container_width=True)
     except Exception as e:
         st.error(f"Error creating scatter plot for {x} vs {y}: {str(e)}")
+
+
+#========================= SECTION 3: RADAR PLOT NORMALIZZATO =========================
+st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione (Centrocampisti)")
+
+if search_names:
+    radar_metrics = ["Pv","Mv","Fm","Gf","Ass","xG_per90","xA_per90","% Gol/Tiri","key_passes","Tiri a partita","Gf a partita"]
+    seasons = {"2022-23": mid2022, "2023-24": mid2023, "2024-25": mid2024}
+    cols = st.columns(len(seasons))
+    
+    for col, (season_name, df_season) in zip(cols, seasons.items()):
+        if df_season.empty:
+            col.info(f"Nessun dato disponibile per {season_name}.")
+            continue
+        
+        df_selected = df_season[df_season["Nome"].isin(search_names)][["Nome"] + radar_metrics].copy()
+        if df_selected.empty:
+            col.info(f"Nessun giocatore selezionato in {season_name}.")
+            continue
+        
+        df_selected = df_selected.groupby("Nome")[radar_metrics].mean().reset_index()
+        
+        # Normalizzazione
+        df_norm = df_selected.copy()
+        for metric in radar_metrics:
+            max_val = df_norm[metric].max()
+            df_norm[metric] = df_norm[metric] / max_val if max_val != 0 else 0
+        
+        df_long = df_norm.melt(id_vars="Nome", value_vars=radar_metrics, var_name="Metrica", value_name="Valore")
+        fig = px.line_polar(df_long, r="Valore", theta="Metrica", color="Nome", line_close=True, markers=True)
+        fig.update_traces(fill='toself')
+        fig.update_layout(
+            polar=dict(radialaxis=dict(visible=True, range=[0,1], tickfont=dict(color="black"))),
+            showlegend=True,
+            title=season_name
+        )
+        col.plotly_chart(fig, use_container_width=True)
+else:
+    st.info("Seleziona almeno un giocatore per visualizzare il radar plot.")
+
+#========================= SECTION 4: "FASCE" CLUSTERING =========================
+st.header("⚡ Clustering Centrocampisti")
+
+numericalCols_mid = [
+    "Pv","Mv","Fm","Gf","Ass","Amm","Esp","xG","xA",
+    "% Gol/Tiri","shots","key_passes","xGBuildup","xGChain",
+    "Minuti a partita"
+]
+
+n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 6, 3)
+
+if st.button("Esegui clustering centrocampisti 2024"):
+    KmeansPCA(mid2024, numericalCols_mid, n_clusters, ruolo="Centrocampisti 2024", highlight_names=search_names)
