@@ -41,12 +41,11 @@ def add_metrics(df, weights=None, fill_missing=True, fill_pv_zero=True, season_l
     df["xG + xA (pts converted)"] = weights['g']*df["xG"] + weights['a']*df["xA"]
     df["G + A (pts converted)"] = weights['g']*df["Gf"] + weights['a']*df["Ass"]
     df["Gs a partita"] = df["Gs"] / df["Pv"].replace({0: pd.NA})
+    df["Qt.I"] = pd.to_numeric(df["Qt.I"], errors='coerce').fillna(1)
+    df["Qt.I"].replace(0, 1, inplace=True)
     if fill_pv_zero:
         df["Gs a partita"] = df["Gs a partita"].fillna(0)
-    
-    # --- ROI ---
-    df["ROI"] = df["Fm"] / df["Qt.I"].replace({0: pd.NA})
-    df["ROI"] = df["ROI"].fillna(0)
+    df["ROI"] = df["Fm"] / df["Qt.I"]
 
     if season_label:
         df["season"] = season_label
