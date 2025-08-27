@@ -83,7 +83,7 @@ mid2024 = df2024[df2024["R"] == "C"]
 
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([mid2022["Nome"], mid2023["Nome"], mid2024["Nome"]]).unique()
-search_names = st.multiselect("Seleziona uno o più portieri da evidenziare", options=sorted(all_names), default=[])
+search_names = st.multiselect("Seleziona uno o più centrocampisti da **confrontare**", options=sorted(all_names), default=[])
 
 # Palette e simboli
 colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qualitative.Dark24
@@ -358,7 +358,7 @@ st.header("📐 Clustering Centrocampisti")
 numericalCols_mid = ["Pv", "Mv", "Fm", "Gf", "Ass", "Amm", "Esp", "xG", "xA", "% Gol/Tiri", "shots", "key_passes", "xGBuildup", "xGChain", "Minuti a partita"]
 n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 6, 3)
 
-if st.button("Esegui clustering portieri 2024"):
+if st.button("Esegui clustering centrocampisti 2024"):
     KmeansPCA(
         mid2024,                    # Last season dataframe
         numericalCols_mid,          # Your selected numeric columns
