@@ -60,7 +60,7 @@ def load_and_prepare(path):
     df["% Gol/Tiri"] = np.where(df["shots"]>0, df["Gf"]/df["shots"],0)
     df["Amm a partita"] = np.where(df["Pv"]>0, df["Amm"]/df["Pv"],0)
     df["Minuti a partita"] = np.where(df["games"]>0, df["time"]/df["games"],0)
-    #df["Tiri a partita"] = np.where(df["games"]>0, df["shots"]/df["games"],0)
+    df["Tiri a partita"] = np.where(df["games"]>0, df["shots"]/df["games"],0)
     df["key_passes a partita"] = np.where(df["games"]>0, df["key_passes"]/df["games"],0)
     df["% Rigori Segnati"] = np.where(df["Rc"]>0, df["R+"]/df["Rc"],0)
     df["Gf a partita"] = np.where(df["Pv"]>0, df["Gf"]/df["Pv"],0)
@@ -108,7 +108,7 @@ st.plotly_chart(fig, use_container_width=True)
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Attaccanti")
 metrics = ["Mv","Fm","Gf","Ass", "Efficienza realizzativa (Gol)", "Efficienza realizzativa (Assist)",
-           "xG_per90","xA_per90","key_passes","G + A (pts converted)",
+           "xG_per90","xA_per90","key_passes","Tiri a partita", "G + A (pts converted)",
            "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Amm a partita"]
 
 for metric in metrics:
