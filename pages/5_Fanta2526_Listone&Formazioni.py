@@ -25,11 +25,14 @@ df_stats = pd.read_excel("2024_25_Merged.xlsx")
 #Aggiunta OverUnder performance
 df_stats["xG + xA (pts converted)"] = 3*df_stats["xG"] + 1*df_stats["xA"]
 df_stats["G + A (pts converted)"] = 3*df_stats["Gf"] + 1*df_stats["Ass"]
-df_stats["Over/Under performance %"] = round(np.where(
+df_stats["Over/Under performance %"] = np.where(
     df_stats["xG + xA (pts converted)"] > 0,
-    100 * (df_stats["G + A (pts converted)"] - df_stats["xG + xA (pts converted)"]) / df_stats["xG + xA (pts converted)"],
-    np.nan   # oppure "-" se preferisci stringa
-), 0)
+    np.round(
+        100 * (df_stats["G + A (pts converted)"] - df_stats["xG + xA (pts converted)"]) / df_stats["xG + xA (pts converted)"],
+        0
+    ),
+    np.nan
+)
 df_stats["Over/Under performance %"] = rounddf_stats["Over/Under performance %"].fillna("-")
 
 # Seleziona solo le colonne utili dalle stats
