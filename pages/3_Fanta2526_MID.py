@@ -71,6 +71,9 @@ def add_metrics(df, season_label=None):
     df["Tiri a partita"] = np.where(df["games"] > 0, df["shots"] / df["games"], 0)
     df["key_passes a partita"] = np.where(df["games"] > 0, df["key_passes"] / df["games"], 0)
     df["Gf a partita"] = np.where(df["Pv"] > 0, df["Gf"] / df["Pv"], 0)
+
+    df["Efficienza realizzativa (Gol)"] = np.where(df["xG"]>0, df["Gf"]/df["xG"], 0)
+    df["Efficienza realizzativa (Assist)"] = np.where(df["xA"]>0, df["Ass"]/df["xA"], 0)
     
     if season_label is not None:
         df["season"] = season_label
@@ -161,7 +164,7 @@ except Exception as e:
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Centrocampisti")
-metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90","key_passes","Tiri a partita","G + A (pts converted)",
+metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90", "Efficienza realizzativa (Gol)", "Efficienza realizzativa (Assist)","key_passes","Tiri a partita","G + A (pts converted)",
            "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Esp"]
 
 def add_boxplot(fig, df, metric, col):
