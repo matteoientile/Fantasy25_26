@@ -15,12 +15,16 @@ Utilizzeremo i seguenti simboli:
 - Mv = Media Voto
 - Fm = Fanta Media
 - Pv = Partite a Voto
+- Gf = Gol Fatti
+- Ass = Assist
+- xG_per90 = Expected Goals per 90 Minuti
+- xA_per90 = Expected Assist per 90 Minuti
 - key_passess = Passaggi Chiave
-- shots = Tiri 
 - G + A (pts converted) = Somma dei Bonus (goal = +3, assist = +1)
-- Amm = Ammonizioni
 - Rc = Rigori Calciati
 - R+ = Rigori Segnati
+- Amm = Ammonizioni
+- Esp = Espulsioni
 """)
 
 #---------------- READ FILES
@@ -81,7 +85,7 @@ stk2024 = df2024[df2024["R"] == "A"]
 
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([stk2022["Nome"], stk2023["Nome"], stk2024["Nome"]]).unique()
-search_names = st.multiselect("Seleziona uno o più portieri da evidenziare", options=sorted(all_names), default=[])
+search_names = st.multiselect("Seleziona uno o più attaccanti da **confrontare**", options=sorted(all_names), default=[])
 
 # Palette e simboli
 colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qualitative.Dark24
