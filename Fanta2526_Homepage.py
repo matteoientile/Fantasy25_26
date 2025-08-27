@@ -60,5 +60,5 @@ with st.expander("🔢 SPIEGAZIONE SEMPLICE (anche se odi la statistica)"):
     - Ogni colore = un gruppo di giocatori simili.  
     - La **PCA** trasforma tutte le statistiche in due assi sintetici (PCA1 e PCA2) per visualizzare facilmente i gruppi.  
     - Non preoccuparti di cosa siano PCA1 e PCA2: servono solo a **mostrare i giocatori in uno spazio 2D** preservando le somiglianze.  
-    👉 Utile per identificare rapidamente giocatori con profili simili, scoprire “talenti nascosti” o confrontare gruppi di giocatori in modo visivo.
+    👉 Utile per raggruppare giocatori con caratteristiche e statistiche simili, scoprire “talenti nascosti” o confrontare gruppi di giocatori.
     """)
