@@ -1,3 +1,5 @@
+import streamlit as st
+
 st.markdown("### 📋 Listone Stagione 25/26")
 
 # Filtro ruolo
