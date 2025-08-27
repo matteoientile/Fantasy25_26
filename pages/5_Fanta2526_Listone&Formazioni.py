@@ -21,10 +21,19 @@ st.header("📋 Listone Stagione 25/26 (con statistiche 24/25)")
 # Carica i file
 df_listone = pd.read_excel("Quotazioni_Fantacalcio_Stagione_2025_26.xlsx")
 df_stats = pd.read_excel("2024_25_Merged.xlsx")
+#Aggiunta OverUnder performance
+df_stats["xG + xA (pts converted)"] = 3*df_stats["xG"] + 1*df_stats["xA"]
+df_stats["G + A (pts converted)"] = 3*df_stats["Gf"] + 1*df_stats["Ass"]
+df_stats["Over/Under performance %"] = np.where(
+    df_stats["xG + xA (pts converted)"] > 0,
+    100 * (df_stats["G + A (pts converted)"] - df_stats["xG + xA (pts converted)"]) / df_stats["xG + xA (pts converted)"],
+    np.nan   # oppure "-" se preferisci stringa
+)
+df_stats["Over/Under performance %"] = df_stats["Over/Under performance %"].fillna("-")
 
 # Seleziona solo le colonne utili dalle stats
 cols_stats = [
-    "Nome", "Mv", "Fm", "Pv", "Gf", "Ass", "Rc", "Gs", "clean_sheet"
+    "Nome", "Mv", "Fm", "Pv", "Gf", "Ass", "Gs", "clean_sheet", "Amm", "Esp", "Rc", "Over/Under performance %"
 ]
 df_stats = df_stats[cols_stats]
 
@@ -35,9 +44,12 @@ df_stats = df_stats.rename(columns={
     "Pv": "Partite a Voto a.p.",
     "Gf": "Gol Fatti a.p.",
     "Ass": "Assist a.p.",
-    "Rc": "Rigori calciati a.p.",
     "Gs": "Gol Subiti a.p.",
-    "clean_sheet": "Clean Sheet a.p."
+    "clean_sheet": "Clean Sheet a.p.",
+    "Amm" : "Ammonizioni a.p",
+    "Esp" : "Espulsioni a.p",
+    "Rc": "Rigori calciati a.p.",
+    "Over/Under performance %" : "Over/Under performance [%] a.p.
 })
 
 # Merge sul nome
