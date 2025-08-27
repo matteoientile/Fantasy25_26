@@ -5,6 +5,8 @@ from plotly.subplots import make_subplots
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+import numpy as np
+
 #---------------- STREAMLIT HEADER
 st.set_page_config(page_title="Fantacalcio 25/26 - Attaccanti", layout="wide") 
 st.title("🎯 Attaccanti - Analisi Statistica")
@@ -19,7 +21,7 @@ Utilizzeremo i seguenti simboli:
 - Ass = Assist
 - xG_per90 = Expected Goals per 90 Minuti
 - xA_per90 = Expected Assist per 90 Minuti
-- key_passess = Passaggi Chiave
+- key_passes = Passaggi Chiave
 - G + A (pts converted) = Somma dei Bonus (goal = +3, assist = +1)
 - Rc = Rigori Calciati
 - R+ = Rigori Segnati
@@ -27,275 +29,135 @@ Utilizzeremo i seguenti simboli:
 - Esp = Espulsioni
 """)
 
-#---------------- READ FILES
-df2022 = pd.read_excel("2022_23_Merged.xlsx")
-df2023 = pd.read_excel("2023_24_Merged.xlsx")
-df2024 = pd.read_excel("2024_25_Merged.xlsx")
-
+#---------------- READ & PREPARE FILES
 drop_columns = ["Id", "id", "goals", "assists", "yellow_cards", "red_cards", "matched"]
-df2022 = df2022.drop(drop_columns, axis=1)
-df2023 = df2023.drop(drop_columns, axis=1)
-df2024 = df2024.drop(drop_columns, axis=1)
 
-df2022["xBonus"] = (3*df2022["xG"] + 1*df2022["xA"] + 3*df2022["Rp"] + 1*df2022["clean_sheet"]) - (2*df2022["Au"]+ 1*df2022["Gs"] + 1*df2022["Esp"] + 0.5*df2022["Amm"] + df2022["R-"])
-df2022["actualBonus"] = (3*df2022["Gf"] + 1*df2022["Ass"] + 3*df2022["Rp"] + 1*df2022["clean_sheet"]) - (2*df2022["Au"]+ 1*df2022["Gs"] + 1*df2022["Esp"] + 0.5*df2022["Amm"]+ df2022["R-"])
-df2022["xG + xA (pts converted)"] = (3*df2022["xG"] + 1*df2022["xA"])
-df2022["G + A (pts converted)"] = (3*df2022["Gf"] + 1*df2022["Ass"])
-df2022["% Gol/Tiri"] = df2022["Gf"]/df2022["shots"]
-df2022["Amm a partita"] = df2022["Amm"]/df2022["Pv"]
-df2022["Minuti a partita"] = df2022["time"]/df2022["games"]
-df2022["Tiri a partita"] = df2022["shots"]/df2022["games"]
-df2022["key_passes a partita"] = df2022["key_passes"]/df2022["games"]
-df2022["% Rigori Segnati"] = df2022["R+"]/df2022["Rc"]
-df2022["Gf a partita"] = df2022["Gf"]/df2022["Pv"]
+@st.cache_data
+def load_and_prepare(path):
+    df = pd.read_excel(path)
+    df = df.drop(columns=drop_columns, errors='ignore')
+    # Fill missing columns if needed
+    required_cols = ["xG","xA","Rp","clean_sheet","Au","Gs","Esp","Amm","R-","Gf","Ass","shots","Rc","R+","time","games","key_passes","Pv","R","Nome","Squadra"]
+    for col in required_cols:
+        if col not in df.columns:
+            df[col] = 0
+    # Feature engineering
+    df["xBonus"] = (3*df["xG"] + df["xA"] + 3*df["Rp"] + df["clean_sheet"]) - (2*df["Au"] + df["Gs"] + df["Esp"] + 0.5*df["Amm"] + df["R-"])
+    df["actualBonus"] = (3*df["Gf"] + df["Ass"] + 3*df["Rp"] + df["clean_sheet"]) - (2*df["Au"] + df["Gs"] + df["Esp"] + 0.5*df["Amm"] + df["R-"])
+    df["xG + xA (pts converted)"] = 3*df["xG"] + df["xA"]
+    df["G + A (pts converted)"] = 3*df["Gf"] + df["Ass"]
+    df["% Gol/Tiri"] = np.where(df["shots"]>0, df["Gf"]/df["shots"],0)
+    df["Amm a partita"] = np.where(df["Pv"]>0, df["Amm"]/df["Pv"],0)
+    df["Minuti a partita"] = np.where(df["games"]>0, df["time"]/df["games"],0)
+    df["Tiri a partita"] = np.where(df["games"]>0, df["shots"]/df["games"],0)
+    df["key_passes a partita"] = np.where(df["games"]>0, df["key_passes"]/df["games"],0)
+    df["% Rigori Segnati"] = np.where(df["Rc"]>0, df["R+"]/df["Rc"],0)
+    df["Gf a partita"] = np.where(df["Pv"]>0, df["Gf"]/df["Pv"],0)
+    return df
 
-df2023["xBonus"] = (3*df2023["xG"] + 1*df2023["xA"] + 3*df2023["Rp"] + 1*df2023["clean_sheet"]) - (2*df2023["Au"]+ 1*df2023["Gs"] + 1*df2023["Esp"] + 0.5*df2023["Amm"] + df2023["R-"])
-df2023["actualBonus"] = (3*df2023["Gf"] + 1*df2023["Ass"] + 3*df2023["Rp"] + 1*df2023["clean_sheet"]) - (2*df2023["Au"]+ 1*df2023["Gs"] + 1*df2023["Esp"] + 0.5*df2023["Amm"] + df2023["R-"])
-df2023["xG + xA (pts converted)"] = (3*df2023["xG"] + 1*df2023["xA"])
-df2023["G + A (pts converted)"] = (3*df2023["Gf"] + 1*df2023["Ass"])
-df2023["% Gol/Tiri"] = df2023["Gf"]/df2023["shots"]
-df2023["Amm a partita"] = df2023["Amm"]/df2023["Pv"]
-df2023["Minuti a partita"] = df2023["time"]/df2023["games"]
-df2023["Tiri a partita"] = df2023["shots"]/df2023["games"]
-df2023["key_passes a partita"] = df2023["key_passes"]/df2023["games"]
-df2023["% Rigori Segnati"] = df2023["R+"]/df2023["Rc"]
-df2023["Gf a partita"] = df2023["Gf"]/df2023["Pv"]
+df2022 = load_and_prepare("2022_23_Merged.xlsx")
+df2023 = load_and_prepare("2023_24_Merged.xlsx")
+df2024 = load_and_prepare("2024_25_Merged.xlsx")
 
-df2024["xBonus"] = (3*df2024["xG"] + 1*df2024["xA"] + 3*df2024["Rp"]+ 1*df2024["clean_sheet"]) - (2*df2024["Au"]+ 1*df2024["Gs"] + 1*df2024["Esp"] + 0.5*df2024["Amm"] + df2024["R-"])
-df2024["actualBonus"] = (3*df2024["Gf"] + 1*df2024["Ass"] + 3*df2024["Rp"] + 1*df2024["clean_sheet"]) - (2*df2024["Au"]+ 1*df2024["Gs"] + 1*df2024["Esp"] + 0.5*df2024["Amm"] + df2024["R-"])
-df2024["xG + xA (pts converted)"] = (3*df2024["xG"] + 1*df2024["xA"])
-df2024["G + A (pts converted)"] = (3*df2024["Gf"] + 1*df2024["Ass"])
-df2024["% Gol/Tiri"] = df2024["Gf"]/df2024["shots"]
-df2024["Amm a partita"] = df2024["Amm"]/df2024["Pv"]
-df2024["Minuti a partita"] = df2024["time"]/df2024["games"]
-df2024["Tiri a partita"] = df2024["shots"]/df2024["games"]
-df2024["key_passes a partita"] = df2024["key_passes"]/df2024["games"]
-df2024["% Rigori Segnati"] = df2024["R+"]/df2024["Rc"]
-df2024["Gf a partita"] = df2024["Gf"]/df2024["Pv"]
 #------------------------- PV FILTER
 min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
-
 df2022 = df2022[df2022["Pv"] >= min_pv]
 df2023 = df2023[df2023["Pv"] >= min_pv]
 df2024 = df2024[df2024["Pv"] >= min_pv]
 
-stk2022 = df2022[df2022["R"] == "A"]
-stk2023 = df2023[df2023["R"] == "A"]
-stk2024 = df2024[df2024["R"] == "A"]
+#------------------------- FILTER ATTACCANTI
+stk2022 = df2022[df2022["R"]=="A"]
+stk2023 = df2023[df2023["R"]=="A"]
+stk2024 = df2024[df2024["R"]=="A"]
 
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([stk2022["Nome"], stk2023["Nome"], stk2024["Nome"]]).unique()
 search_names = st.multiselect("Seleziona uno o più attaccanti da **confrontare**", options=sorted(all_names), default=[])
 
-# Palette e simboli
 colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qualitative.Dark24
-symbols = ["circle", "square", "diamond", "star", "cross", "x", "triangle-up", "triangle-down"]
+symbols = ["circle","square","diamond","star","cross","x","triangle-up","triangle-down"]
 
 #========================= SECTION 0: CORRELATION MATRICES =========================
-corrstk2022 = stk2022.corr(numeric_only=True)
-corrstk2023 = stk2023.corr(numeric_only=True)
-corrstk2024 = stk2024.corr(numeric_only=True)
-corrstk = (corrstk2022 + corrstk2023 + corrstk2024)/3
 st.header("📊 Matrici di correlazione - Attaccanti")
-fig = px.imshow(
-    corrstk,
-    text_auto=".2f",
-    color_continuous_scale='RdBu_r',
-    aspect="auto",
-    title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (ATT)"
-)
-
-fig.update_layout(
-    height=800
-)
-
+corrstk = (stk2022.corr(numeric_only=True) + stk2023.corr(numeric_only=True) + stk2024.corr(numeric_only=True))/3
+fig = px.imshow(corrstk, text_auto=".2f", color_continuous_scale='RdBu_r', aspect="auto",
+                title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (ATT)")
+fig.update_layout(height=800)
 st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Attaccanti")
+metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90","key_passes","Tiri a partita","G + A (pts converted)",
+           "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Amm a partita"]
 
-metrics = ["Mv", "Fm", "Gf", "Ass", "xG_per90", "xA_per90", "key_passes", "Tiri a partita", "G + A (pts converted)",
-           "Rc", "R+", "% Rigori Segnati", "Minuti a partita", "Amm", "Amm a partita"]
 for metric in metrics:
     st.subheader(f"{metric} - Boxplot 2022-2024")
-    
-    fig = make_subplots(
-        rows=1, cols=3,
-        subplot_titles=("2022", "2023", "2024"),
-        horizontal_spacing=0.15
-    )
-
+    fig = make_subplots(rows=1, cols=3, subplot_titles=("2022","2023","2024"), horizontal_spacing=0.15)
     def add_boxplot(fig, df, col):
-        # Base boxplot
-        box = px.violin(
-            df,
-            y=metric,
-            box=True,
-            points="all",
-            hover_data=["Nome", "Squadra", "Pv"]
-        )
+        if metric not in df.columns or df.empty:
+            return
+        box = px.violin(df, y=metric, box=True, points="all", hover_data=["Nome","Squadra","Pv"])
         for trace in box.data:
             fig.add_trace(trace, row=1, col=col)
-        
         # Highlight selected players
         for i, name in enumerate(search_names):
-            highlight = df[df["Nome"] == name]
+            highlight = df[df["Nome"]==name]
             if not highlight.empty:
-                fig.add_trace(
-                    px.scatter(
-                        highlight,
-                        y=metric,
-                        hover_name="Nome"
-                    ).update_traces(
-                        marker=dict(size=15, color=colors[i % len(colors)], symbol=symbols[i % len(symbols)]),
-                        name=name,
-                        showlegend=True
-                    ).data[0],
-                    row=1, col=col
-                )
-
+                fig.add_trace(px.scatter(highlight, y=metric, hover_name="Nome").update_traces(
+                    marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]),
+                    name=name, showlegend=True).data[0], row=1, col=col)
     add_boxplot(fig, stk2022, col=1)
     add_boxplot(fig, stk2023, col=2)
     add_boxplot(fig, stk2024, col=3)
-
-    fig.update_layout(
-        height=500, width=1200,
-        title=f"{metric} - Attaccanti 2022-2024",
-        showlegend=True
-    )
+    fig.update_layout(height=500, width=1200, title=f"{metric} - Attaccanti 2022-2024", showlegend=True)
     st.plotly_chart(fig, use_container_width=True)
-
-
 
 #========================= SECTION 2: REGRESSION =========================
 st.header("📈 Correlazioni Coppie di Variabili")
-
+pairs = [("Mv","Fm"),("shots","Gf"),("Tiri a partita","Fm"),("Gf","Ass"),("xG","Gf"),("xA","Ass"),("Tiri a partita","Gf a partita"),("Gf","R+")]
 def add_scatter(fig, df, x, y, col):
-    scatter = px.scatter(
-        df,
-        x=x,
-        y=y,
-        trendline="ols",
-        hover_name="Nome",
-        hover_data=["Squadra", "Pv"]
-    )
+    if df.empty or x not in df.columns or y not in df.columns:
+        return
+    scatter = px.scatter(df, x=x, y=y, trendline="ols", hover_name="Nome", hover_data=["Squadra","Pv"])
     for trace in scatter.data:
         fig.add_trace(trace, row=1, col=col)
-
-    # Highlight selected players
-    for i, name in enumerate(search_names):
-        highlight = df[df["Nome"] == name]
+    for i,name in enumerate(search_names):
+        highlight = df[df["Nome"]==name]
         if not highlight.empty:
-            fig.add_trace(
-                px.scatter(
-                    highlight,
-                    x=x,
-                    y=y,
-                    hover_name="Nome"
-                ).update_traces(
-                    marker=dict(size=15, color=colors[i % len(colors)], symbol=symbols[i % len(symbols)]),
-                    name=name,
-                    showlegend=True
-                ).data[0],
-                row=1, col=col
-            )
+            fig.add_trace(px.scatter(highlight,x=x,y=y,hover_name="Nome").update_traces(
+                marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]),
+                name=name, showlegend=True).data[0], row=1, col=col)
 
-# Variabili da confrontare
-pairs = [
-    ("Mv", "Fm", "📈 Mv vs Fm - Attaccanti 2022-2024"),
-    ("shots", "Gf", "📈 Tiri vs Gf - Attaccanti 2022-2024"),
-    ("Tiri a partita", "Fm", "📈 Tiri a partita vs Fm - Attaccanti 2022-2024"),
-    ("Gf", "Ass", "📈 Gol Fatti vs Assist - Attaccanti 2022-2024"),
-    ("xG", "Gf", "📈 xG vs Gol Fatti - Attaccanti 2022-2024"),
-    ("xG", "Fm", "📈 xG vs Fm - Attaccanti 2022-2024"),
-    ("xA", "Ass", "📈 xA vs Assist - Attaccanti 2022-2024"),
-    ("Tiri a partita", "Gf a partita", "📈 Tiri vs Gf - Attaccanti 2022-2024"),
-    ("Tiri a partita", "Fm", "📈 Tiri vs Fm - Attaccanti 2022-2024"),
-    ("Gf", "R+", "📈 Gf vs Rigori segnati - Attaccanti 2022-2024")
-]
-
-for x, y, title in pairs:
-    fig = make_subplots(
-        rows=1, cols=3,
-        subplot_titles=("2022", "2023", "2024"),
-        horizontal_spacing=0.1
-    )
-    for col, df in zip([1, 2, 3], [stk2022, stk2023, stk2024]):
+for x,y in pairs:
+    fig = make_subplots(rows=1,cols=3,subplot_titles=("2022","2023","2024"),horizontal_spacing=0.1)
+    for col, df in zip([1,2,3],[stk2022,stk2023,stk2024]):
         add_scatter(fig, df, x, y, col)
-
-    fig.update_layout(
-        height=500, width=1600,
-        showlegend=True,
-        title=title
-    )
-    fig.update_xaxes(title_text=x, row=1, col=1)
-    fig.update_xaxes(title_text=x, row=1, col=2)
-    fig.update_xaxes(title_text=x, row=1, col=3)
-
-    fig.update_yaxes(title_text=y, row=1, col=1)
-    fig.update_yaxes(title_text=y, row=1, col=2)
-    fig.update_yaxes(title_text=y, row=1, col=3)
-
+    fig.update_layout(height=500, width=1600, showlegend=True, title=f"{x} vs {y} - Attaccanti 2022-2024")
+    for col in [1,2,3]:
+        fig.update_xaxes(title_text=x,row=1,col=col)
+        fig.update_yaxes(title_text=y,row=1,col=col)
     st.plotly_chart(fig, use_container_width=True)
 
-#========================= SECTION 3: RADAR PLOT NORMALIZZATO =========================
-st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione")
-
+#========================= SECTION 3: RADAR PLOT =========================
+st.header("📊 Confronto Radar dei Giocatori Selezionati")
 if search_names:
-    radar_metrics = [
-        "Pv", "Mv", "Fm", "Gf", "Ass", "xG_per90", "xA_per90",
-        "% Gol/Tiri"
-    ]
-
-    seasons = {
-        "2022-23": stk2022,
-        "2023-24": stk2023,
-        "2024-25": stk2024
-    }
-
-    # Creo colonne affiancate per le 3 stagioni
+    radar_metrics = ["Pv","Mv","Fm","Gf","Ass","xG_per90","xA_per90","% Gol/Tiri","Tiri a partita","G + A (pts converted)","Gf a partita"]
+    seasons = {"2022-23":stk2022,"2023-24":stk2023,"2024-25":stk2024}
     cols = st.columns(len(seasons))
-
-    for col, (season_name, df_season) in zip(cols, seasons.items()):
-        # Filtra solo i giocatori selezionati presenti in questa stagione
-        df_selected = df_season[df_season["Nome"].isin(search_names)][["Nome"] + radar_metrics].copy()
+    for col,(season_name, df_season) in zip(cols,seasons.items()):
+        df_selected = df_season[df_season["Nome"].isin(search_names)][["Nome"]+radar_metrics].copy()
         if df_selected.empty:
             col.info(f"Nessun giocatore selezionato in {season_name}.")
             continue
-
         df_selected = df_selected.groupby("Nome")[radar_metrics].mean().reset_index()
-
-        # Normalizzazione: per ogni metrica il massimo tra i giocatori selezionati diventa 1
         df_norm = df_selected.copy()
         for metric in radar_metrics:
             max_val = df_norm[metric].max()
-            if max_val != 0:
-                df_norm[metric] = df_norm[metric] / max_val
-            else:
-                df_norm[metric] = 0
-
-        # Trasforma in formato long (necessario per px.line_polar)
-        df_long = df_norm.melt(id_vars="Nome", value_vars=radar_metrics,
-                               var_name="Metrica", value_name="Valore")
-
-        # Plot radar
-        fig = px.line_polar(
-            df_long,
-            r="Valore",
-            theta="Metrica",
-            color="Nome",
-            line_close=True,
-            markers=True
-        )
+            df_norm[metric] = df_norm[metric]/max_val if max_val!=0 else 0
+        df_long = df_norm.melt(id_vars="Nome", value_vars=radar_metrics, var_name="Metrica", value_name="Valore")
+        fig = px.line_polar(df_long, r="Valore", theta="Metrica", color="Nome", line_close=True, markers=True)
         fig.update_traces(fill='toself')
-        fig.update_layout(
-            polar=dict(
-                radialaxis=dict(visible=True, range=[0, 1], tickfont=dict(color="black"))
-            ),
-            showlegend=True,
-            title=season_name
-        )
-
+        fig.update_layout(polar=dict(radialaxis=dict(visible=True,range=[0,1])),showlegend=True,title=season_name)
         col.plotly_chart(fig, use_container_width=True)
 else:
     st.info("Seleziona almeno un giocatore per visualizzare il radar plot.")
