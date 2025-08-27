@@ -61,7 +61,7 @@ def add_metrics(df, weights=None, fill_missing=True, fill_pv_zero=True, season_l
     df["% Gol/Tiri"] = df["Gf"] / df["shots"].replace({0: pd.NA})
     df["Amm a partita"] = df["Amm"] / df["Pv"].replace({0: pd.NA})
     df["Minuti a partita"] = df["time"] / df["games"].replace({0: pd.NA})
-    df["Tiri a partita"] = df["shots"] / df["games"].replace({0: pd.NA})
+    df["Tiri a partita"] = df["shots"] / df["games"]
     df["key_passes a partita"] = df["key_passes"] / df["games"].replace({0: pd.NA})
     df["% Rigori Segnati"] = df["R+"] / df["Rc"].replace({0: pd.NA})
     if fill_pv_zero:
