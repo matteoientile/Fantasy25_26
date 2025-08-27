@@ -192,7 +192,7 @@ for x,y,title in pairs:
 st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione")
 
 if search_names:
-    radar_metrics = ["Pv","Mv","Fm","clean_sheet","Rp"]
+    radar_metrics = ["Pv","Mv","Fm", "Gs", "clean_sheet","Rp"]
     seasons = {"2022-23":gk2022,"2023-24":gk2023,"2024-25":gk2024}
     cols = st.columns(len(seasons))
     for col,(season_name,df_season) in zip(cols,seasons.items()):
