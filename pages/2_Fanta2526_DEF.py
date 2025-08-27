@@ -66,8 +66,6 @@ def add_metrics(df, season_label=None):
     df["key_passes a partita"] = df["key_passes"] / df["games"]
     df["Efficienza realizzativa (Gol)"] = df["Gf"]/df["xG"]
     df["Efficienza realizzativa (Assist)"] = df["Ass"]/df["xA"]
-
-posso aggiungere senza problemi ad add_metrics?
     # Season label
     if season_label is not None:
         df["season"] = season_label
