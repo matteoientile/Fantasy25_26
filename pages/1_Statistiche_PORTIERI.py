@@ -112,29 +112,15 @@ colors = ["red", "blue", "green", "orange", "purple"]
 symbols = ["circle", "diamond", "square", "triangle-up", "star"]
 
 def add_boxplot(fig, df, col, metric, search_names=None):
-    """
-    Aggiunge un boxplot (violin plot) per la colonna metric nella figura fig
-    df: DataFrame dei dati
-    col: colonna del subplot (1,2,3)
-    metric: nome della metrica
-    search_names: lista di giocatori da evidenziare
-    """
     df_plot = df.copy()
-    
-    # Converti la colonna in numerico, forzando NaN se non convertibile
     df_plot[metric] = pd.to_numeric(df_plot[metric], errors="coerce")
-    
-    # Filtra solo i valori numerici
     df_plot = df_plot.dropna(subset=[metric])
     
-    # Crea violin plot
     box = px.violin(df_plot, y=metric, box=True, points="all", hover_data=["Nome","Squadra","Pv"])
-    
-    # Aggiungi i trace alla figura principale
+
     for trace in box.data:
         fig.add_trace(trace, row=1, col=col)
     
-    # Evidenzia i giocatori selezionati
     if search_names:
         for i, name in enumerate(search_names):
             highlight = df_plot[df_plot["Nome"] == name]
@@ -150,7 +136,7 @@ def add_boxplot(fig, df, col, metric, search_names=None):
 
 
 # Lista delle metriche da mostrare
-metrics = ["Mv","Fm","Gs","Gs a partita","clean_sheet","Amm","Esp"]
+metrics = ["Mv","Fm","Gs","clean_sheet","Amm","Esp"]
 
 # Ciclo per creare e mostrare i grafici
 for metric in metrics:
