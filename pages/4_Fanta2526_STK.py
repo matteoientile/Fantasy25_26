@@ -359,7 +359,7 @@ st.header("🎯 Clustering Attaccanti")
 numericalCols_stk = ["Pv", "Mv", "Fm", "Gf", "Ass", "Amm", "Esp", "xG", "xA", "% Gol/Tiri", "shots", "key_passes", "xGBuildup", "xGChain", "Minuti a partita"]
 n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 8, 3)
 
-if st.button("Esegui clustering portieri 2024"):
+if st.button("Esegui clustering attaccanti 2024"):
     KmeansPCA(
         stk2024,                    # Last season dataframe
         numericalCols_stk,          # Your selected numeric columns
