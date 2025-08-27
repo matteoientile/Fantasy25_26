@@ -22,25 +22,41 @@ Utilizzeremo i seguenti simboli:
 - Esp = Espulsioni
 """)
 
+#========================= SIDEBAR: INDICE =========================
+st.sidebar.header("📌 Indice")
+st.sidebar.markdown("""
+- [📊 Boxplot Portieri](#boxplot-portieri)
+- [📈 Correlazioni Coppie di Variabili](#correlazioni-coppie-di-variabili)
+- [📊 Confronto Radar dei Giocatori Selezionati per Stagione](#confronto-radar-dei-giocatori-selezionati-per-stagione)
+- [🧤 Clustering Portieri](#clustering-portieri)
+- [⚡ Altre metriche](#altre-metriche)
+""")
+
 #---------------- FEATURE ENGINEERING 
 def add_metrics(df, weights=None, fill_missing=True, fill_pv_zero=True, season_label=None):
     df = df.copy()
-    required_cols = ["xG", "xA", "Rp", "clean_sheet", "Au", "Gs", "Esp", "Amm", "R-", "Gf", "Ass", "Pv"]
+    required_cols = ["xG","xA","Rp","clean_sheet","Au","Gs","Esp","Amm","R-","Gf","Ass","Pv","Qt.I"]
     if fill_missing:
         for c in required_cols:
             if c not in df.columns:
                 df[c] = 0
     for c in required_cols:
-        df[c] = pd.to_numeric(df.get(c, 0), errors='coerce').fillna(0)
+        df[c] = pd.to_numeric(df.get(c,0), errors='coerce').fillna(0)
+
     if weights is None:
         weights = {'g':3,'a':1,'rp':3,'cs':1,'au':2,'gs':1,'esp':1,'amm':0.5,'r-':1}
+
     df["xBonus"] = (weights['g']*df["xG"] + weights['a']*df["xA"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]) - (weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"])
     df["actualBonus"] = (weights['g']*df["Gf"] + weights['a']*df["Ass"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]) - (weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"])
     df["xG + xA (pts converted)"] = weights['g']*df["xG"] + weights['a']*df["xA"]
     df["G + A (pts converted)"] = weights['g']*df["Gf"] + weights['a']*df["Ass"]
     df["Gs a partita"] = df["Gs"] / df["Pv"].replace({0: pd.NA})
+    df["Qt.I"] = pd.to_numeric(df["Qt.I"], errors='coerce').fillna(1)
+    df["Qt.I"].replace(0, 1, inplace=True)
     if fill_pv_zero:
         df["Gs a partita"] = df["Gs a partita"].fillna(0)
+    df["ROI"] = df["Fm"] / df["Qt.I"]
+
     if season_label:
         df["season"] = season_label
     return df
@@ -79,8 +95,9 @@ colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qua
 symbols = ["circle","square","diamond","star","cross","x","triangle-up","triangle-down"]
 
 #========================= SECTION 0: CORRELATION MATRICES =========================
-corrgk = (gk2022.corr(numeric_only=True) + gk2023.corr(numeric_only=True) + gk2024.corr(numeric_only=True)) / 3
 st.header("📊 Matrice di correlazione - Portieri")
+
+corrgk = (gk2022.corr(numeric_only=True) + gk2023.corr(numeric_only=True) + gk2024.corr(numeric_only=True)) / 3
 fig = px.imshow(corrgk, text_auto=".2f", color_continuous_scale='RdBu_r', aspect="auto", title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (POR)")
 fig.update_layout(height=800)
 st.plotly_chart(fig, use_container_width=True)
@@ -97,7 +114,7 @@ def add_boxplot(fig, df, col, metric):
         if not highlight.empty:
             fig.add_trace(px.scatter(highlight, y=metric, hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
 
-metrics = ["Mv","Fm","Gs","Gs a partita","clean_sheet","Amm","Esp"]
+metrics = ["Mv","Fm","Gs","Gs a partita","clean_sheet","Amm","Esp","ROI"]
 for metric in metrics:
     st.subheader(f"{metric} - Boxplot 2022-2024")
     fig = make_subplots(rows=1, cols=3, subplot_titles=("2022","2023","2024"), horizontal_spacing=0.15)
