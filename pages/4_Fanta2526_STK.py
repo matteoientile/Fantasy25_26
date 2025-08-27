@@ -29,6 +29,17 @@ Utilizzeremo i seguenti simboli:
 - Esp = Espulsioni
 """)
 
+#========================= SIDEBAR: INDICE =========================
+st.sidebar.header("📌 Indice")
+st.sidebar.markdown("""
+- [📊 Boxplot Attaccanti](#boxplot-attaccanti)
+- [📈 Correlazioni Coppie di Variabili](#correlazioni-coppie-di-variabili)
+- [📊 Confronto Radar dei Giocatori Selezionati per Stagione](#confronto-radar-dei-giocatori-selezionati-per-stagione)
+- [📐 Clustering Attaccanti](#clustering-attaccanti)
+- [⚡ Altre metriche](#altre-metriche)
+""")
+
+
 #---------------- READ & PREPARE FILES
 drop_columns = ["Id", "id", "goals", "assists", "yellow_cards", "red_cards", "matched"]
 
