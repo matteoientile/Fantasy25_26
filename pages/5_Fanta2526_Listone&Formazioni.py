@@ -50,7 +50,7 @@ df_stats = df_stats.rename(columns={
     "Amm" : "Ammonizioni a.p",
     "Esp" : "Espulsioni a.p",
     "Rc": "Rigori calciati a.p.",
-    "Over/Under performance %" : "Over/Under performance [%] a.p.
+    "Over/Under performance %" : "Over/Under performance [%] a.p."
 })
 
 # Merge sul nome
