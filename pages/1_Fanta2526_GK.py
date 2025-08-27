@@ -25,25 +25,46 @@ Utilizzeremo i seguenti simboli:
 #---------------- FEATURE ENGINEERING 
 def add_metrics(df, weights=None, fill_missing=True, fill_pv_zero=True, season_label=None):
     df = df.copy()
-    required_cols = ["xG", "xA", "Rp", "clean_sheet", "Au", "Gs", "Esp", "Amm", "R-", "Gf", "Ass", "Pv", "Qt.I"]
+    # Columns needed to calculate new feature
+    required_cols = ["xG","xA","Rp","clean_sheet","Au","Gs","Esp","Amm","R-","Gf","Ass","Pv","Qt.I"]
+    # Fill with zeros
     if fill_missing:
         for c in required_cols:
             if c not in df.columns:
                 df[c] = 0
+    # NaN
     for c in required_cols:
         df[c] = pd.to_numeric(df.get(c, 0), errors='coerce').fillna(0)
+    # Bonus evaluation
     if weights is None:
         weights = {'g':3,'a':1,'rp':3,'cs':1,'au':2,'gs':1,'esp':1,'amm':0.5,'r-':1}
-    df["xBonus"] = (weights['g']*df["xG"] + weights['a']*df["xA"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]) - (weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"])
-    df["actualBonus"] = (weights['g']*df["Gf"] + weights['a']*df["Ass"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]) - (weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"])
+    # Metrics
+    df["xBonus"] = (
+        weights['g']*df["xG"] + weights['a']*df["xA"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]
+    ) - (
+        weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"]
+    )
+    df["actualBonus"] = (
+        weights['g']*df["Gf"] + weights['a']*df["Ass"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]
+    ) - (
+        weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"]
+    )
+    
     df["xG + xA (pts converted)"] = weights['g']*df["xG"] + weights['a']*df["xA"]
     df["G + A (pts converted)"] = weights['g']*df["Gf"] + weights['a']*df["Ass"]
     df["Gs a partita"] = df["Gs"] / df["Pv"].replace({0: pd.NA})
-    df["ROI"] = df["Fm"]/df["Qt.I"]
+    
     if fill_pv_zero:
         df["Gs a partita"] = df["Gs a partita"].fillna(0)
+    
+    # Calcolo ROI sicuro
+    df["ROI"] = df["Fm"] / df["Qt.I"].replace({0: pd.NA})
+    df["ROI"] = df["ROI"].fillna(0)
+    
+    # Aggiungo etichetta stagione
     if season_label:
         df["season"] = season_label
+    
     return df
 
 #---------------- READ & PREPARE FILES
