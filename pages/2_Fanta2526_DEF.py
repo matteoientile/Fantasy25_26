@@ -387,7 +387,7 @@ numericalCols_def = ["Pv", "Mv", "Fm", "Gf", "Ass", "Amm", "Esp", "xG", "xA", "%
 # Sidebar options for clustering
 n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 6, 3)
 
-if st.button("Esegui clustering portieri 2024"):
+if st.button("Esegui clustering difensori 2024"):
     KmeansPCA(
         def2024,                    # Last season dataframe
         numericalCols_def,          # Your selected numeric columns
