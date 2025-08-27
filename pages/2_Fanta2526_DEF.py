@@ -64,7 +64,10 @@ def add_metrics(df, season_label=None):
     df["Minuti a partita"] = df["time"] / df["games"]
     df["Tiri a partita"] = df["shots"] / df["games"]
     df["key_passes a partita"] = df["key_passes"] / df["games"]
-    
+    df["Efficienza realizzativa (Gol)"] = df["Gf"]/df["xG"]
+    df["Efficienza realizzativa (Assist)"] = df["Ass"]/df["xA"]
+
+posso aggiungere senza problemi ad add_metrics?
     # Season label
     if season_label is not None:
         df["season"] = season_label
@@ -143,7 +146,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Difensori")
-metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90","key_passes","Tiri a partita","G + A (pts converted)",
+metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90", "Efficienza realizzativa (Gol)", "Efficienza realizzativa (Assist)", "key_passes","Tiri a partita","G + A (pts converted)",
            "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Amm a partita"]
 
 def add_boxplot(fig, df, col, metric):
