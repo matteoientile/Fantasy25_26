@@ -47,6 +47,7 @@ df2022["Minuti a partita"] = df2022["time"]/df2022["games"]
 df2022["Tiri a partita"] = df2022["shots"]/df2022["games"]
 df2022["key_passes a partita"] = df2022["key_passes"]/df2022["games"]
 df2022["% Rigori Segnati"] = df2022["R+"]/df2022["Rc"]
+df2022["Gf a partita"] = df2022["Gf"]/df2022["Pv"]
 
 
 df2023["xBonus"] = (3*df2023["xG"] + 1*df2023["xA"] + 3*df2023["Rp"] + 1*df2023["clean_sheet"]) - (2*df2023["Au"]+ 1*df2023["Gs"] + 1*df2023["Esp"] + 0.5*df2023["Amm"] + df2023["R-"])
@@ -59,6 +60,7 @@ df2023["Minuti a partita"] = df2023["time"]/df2023["games"]
 df2023["Tiri a partita"] = df2023["shots"]/df2023["games"]
 df2023["key_passes a partita"] = df2023["key_passes"]/df2023["games"]
 df2023["% Rigori Segnati"] = df2023["R+"]/df2023["Rc"]
+df2023["Gf a partita"] = df2023["Gf"]/df2023["Pv"]
 
 df2024["xBonus"] = (3*df2024["xG"] + 1*df2024["xA"] + 3*df2024["Rp"]+ 1*df2024["clean_sheet"]) - (2*df2024["Au"]+ 1*df2024["Gs"] + 1*df2024["Esp"] + 0.5*df2024["Amm"] + df2024["R-"])
 df2024["actualBonus"] = (3*df2024["Gf"] + 1*df2024["Ass"] + 3*df2024["Rp"] + 1*df2024["clean_sheet"]) - (2*df2024["Au"]+ 1*df2024["Gs"] + 1*df2024["Esp"] + 0.5*df2024["Amm"] + df2024["R-"])
@@ -70,6 +72,7 @@ df2024["Minuti a partita"] = df2024["time"]/df2024["games"]
 df2024["Tiri a partita"] = df2024["shots"]/df2024["games"]
 df2024["key_passes a partita"] = df2024["key_passes"]/df2024["games"]
 df2024["% Rigori Segnati"] = df2024["R+"]/df2024["Rc"]
+df2024["Gf a partita"] = df2024["Gf"]/df2024["Pv"]
 #------------------------- PV FILTER
 min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
 
