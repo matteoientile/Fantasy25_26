@@ -27,7 +27,7 @@ df_stats = pd.read_excel("2024_25_Merged.xlsx")
 
 df_listone = df_listone.rename(columns={
     "Qt.A": "Quotazione Fantagazzetta",
-    "FMV": "Prezzo Fantagazzetta / 500C."
+    "FVM": "Prezzo Fantagazzetta / 500C."
 })
 
 # Aggiunta Over/Under performance
