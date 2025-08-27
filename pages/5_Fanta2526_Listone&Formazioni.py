@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 #---------------- STREAMLIT HEADER
 st.set_page_config(page_title="Fantacalcio 25/26 - Listone & Probabili Formazioni", layout="wide") 
 st.title("📋 Listone Stagione 25/26 & ⚽ Probabili Formazioni ")
