@@ -6,6 +6,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 
+st.write(mid2022.columns)
+st.write(mid2023.columns)
+st.write(mid2024.columns)
+
 #---------------- STREAMLIT HEADER
 st.set_page_config(page_title="Fantacalcio 25/26 - Centrocampisti", layout="wide") 
 st.title("📐 Centrocampisti - Analisi Statistica")
@@ -79,9 +83,9 @@ def filter_pv(df, min_pv):
 
 df2022, df2023, df2024 = filter_pv(df2022, min_pv), filter_pv(df2023, min_pv), filter_pv(df2024, min_pv)
 
-mid2022 = df2022[df2022["R"]=="C"].copy()
-mid2023 = df2023[df2023["R"]=="C"].copy()
-mid2024 = df2024[df2024["R"]=="C"].copy()
+mid2022 = df2022[df2022["R"]=="C"]
+mid2023 = df2023[df2023["R"]=="C"]
+mid2024 = df2024[df2024["R"]=="C"]
 
 
 #------------------------- MULTI SEARCH BOX
