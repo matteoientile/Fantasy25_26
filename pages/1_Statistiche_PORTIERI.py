@@ -103,24 +103,77 @@ st.plotly_chart(fig, use_container_width=True)
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Portieri")
 
-def add_boxplot(fig, df, col, metric):
-    box = px.violin(df, y=metric, box=True, points="all", hover_data=["Nome","Squadra","Pv"])
+import plotly.express as px
+from plotly.subplots import make_subplots
+import pandas as pd
+
+# Colori e simboli per evidenziare giocatori
+colors = ["red", "blue", "green", "orange", "purple"]
+symbols = ["circle", "diamond", "square", "triangle-up", "star"]
+
+def add_boxplot(fig, df, col, metric, search_names=None):
+    """
+    Aggiunge un boxplot (violin plot) per la colonna metric nella figura fig
+    df: DataFrame dei dati
+    col: colonna del subplot (1,2,3)
+    metric: nome della metrica
+    search_names: lista di giocatori da evidenziare
+    """
+    df_plot = df.copy()
+    
+    # Converti la colonna in numerico, forzando NaN se non convertibile
+    df_plot[metric] = pd.to_numeric(df_plot[metric], errors="coerce")
+    
+    # Filtra solo i valori numerici
+    df_plot = df_plot.dropna(subset=[metric])
+    
+    # Crea violin plot
+    box = px.violin(df_plot, y=metric, box=True, points="all", hover_data=["Nome","Squadra","Pv"])
+    
+    # Aggiungi i trace alla figura principale
     for trace in box.data:
         fig.add_trace(trace, row=1, col=col)
-    for i, name in enumerate(search_names):
-        highlight = df[df["Nome"]==name]
-        if not highlight.empty:
-            fig.add_trace(px.scatter(highlight, y=metric, hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
+    
+    # Evidenzia i giocatori selezionati
+    if search_names:
+        for i, name in enumerate(search_names):
+            highlight = df_plot[df_plot["Nome"] == name]
+            if not highlight.empty:
+                scatter = px.scatter(
+                    highlight, y=metric, hover_name="Nome"
+                ).update_traces(
+                    marker=dict(size=15, color=colors[i % len(colors)], symbol=symbols[i % len(symbols)]),
+                    name=name,
+                    showlegend=True
+                )
+                fig.add_trace(scatter.data[0], row=1, col=col)
 
+
+# Lista delle metriche da mostrare
 metrics = ["Mv","Fm","Gs","Gs a partita","clean_sheet","Amm","Esp"]
+
+# Ciclo per creare e mostrare i grafici
 for metric in metrics:
     st.subheader(f"{metric} - Boxplot 2022-2024")
-    fig = make_subplots(rows=1, cols=3, subplot_titles=("2022","2023","2024"), horizontal_spacing=0.15)
-    add_boxplot(fig,gk2022,1,metric)
-    add_boxplot(fig,gk2023,2,metric)
-    add_boxplot(fig,gk2024,3,metric)
-    fig.update_layout(height=500,width=1200,title=f"{metric} - Portieri 2022-2024", showlegend=True)
+    fig = make_subplots(
+        rows=1, cols=3, 
+        subplot_titles=("2022","2023","2024"), 
+        horizontal_spacing=0.15
+    )
+    
+    add_boxplot(fig, gk2022, 1, metric, search_names)
+    add_boxplot(fig, gk2023, 2, metric, search_names)
+    add_boxplot(fig, gk2024, 3, metric, search_names)
+    
+    fig.update_layout(
+        height=500,
+        width=1200,
+        title=f"{metric} - Portieri 2022-2024",
+        showlegend=True
+    )
+    
     st.plotly_chart(fig, use_container_width=True)
+
 
 #========================= SECTION 2: REGRESSION =========================
 st.header("📈 Correlazioni Coppie di Variabili")
