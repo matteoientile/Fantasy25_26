@@ -66,6 +66,8 @@ def add_metrics(df, season_label=None):
     df["key_passes a partita"] = df["key_passes"] / df["games"]
     df["Efficienza realizzativa (Gol)"] = np.where(df["xG"] > 0, df["Gf"] / df["xG"], 0)
     df["Efficienza realizzativa (Assist)"] = np.where(df["xA"] > 0, df["Ass"] / df["xA"], 0)
+    df["Efficienza realizzativa (Gol)"] = df["Efficienza realizzativa (Gol)"].replace([np.inf, -np.inf, np.nan], 0)
+    df["Efficienza realizzativa (Assist)"] = df["Efficienza realizzativa (Assist)"].replace([np.inf, -np.inf, np.nan], 0)
     # Season label
     if season_label is not None:
         df["season"] = season_label
