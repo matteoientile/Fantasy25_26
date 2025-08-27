@@ -15,9 +15,15 @@ Utilizzeremo i seguenti simboli:
 - Mv = Media Voto
 - Fm = Fanta Media
 - Pv = Partite a Voto
+- Gf = Gol Fatti
+- Ass = Assist
+- xG_per90 = Expected Goals per 90 Minuti
+- xA_per90 = Expected Assist per 90 Minuti
 - key_passess = Passaggi Chiave
 - shots = Tiri 
 - G + A (pts converted) = Somma dei Bonus (goal = +3, assist = +1)
+- Rc = Rigori Calciati
+- R+ = Rigori Segnati
 - Amm = Ammonizioni
 - Esp = Espulsioni
 """)
@@ -108,7 +114,7 @@ def2024["clean_sheet_def"] = def2024["Squadra"].map(cs_2024)
 
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([def2022["Nome"], def2023["Nome"], def2024["Nome"]]).unique()
-search_names = st.multiselect("Seleziona uno o più portieri da evidenziare", options=sorted(all_names), default=[])
+search_names = st.multiselect("Seleziona uno o più difensori da **confrontare**", options=sorted(all_names), default=[])
 
 # Palette e simboli
 colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qualitative.Dark24
@@ -225,9 +231,9 @@ def add_scatter(fig, df, x, y, col):
 
 # Variabili da confrontare
 pairs = [
-    ("Pv", "Mv", "📈 Mv vs Amm - Difensori 2022-2024"),
     ("Mv", "Fm", "📈 Mv vs Fm - Difensori 2022-2024"),
-    ("shots", "Fm", "📈 Tiri vs Fm - Difensori 2022-2024"),
+    ("Pv", "Mv", "📈 Pv vs Mv - Difensori 2022-2024"),
+    ("Tiri a partita", "Fm", "📈 Tiri a partita vs Fm - Difensori 2022-2024"),
     ("shots", "Gf", "📈 Tiri vs Gf - Difensori 2022-2024"),
     ("xG", "Gf", "📈 xG vs Gol Fatti - Difensori 2022-2024"),
     ("xA", "Ass", "📈 xA vs Assist - Difensori 2022-2024"),
