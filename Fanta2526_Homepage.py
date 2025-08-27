@@ -43,7 +43,7 @@ with st.expander("🔢 SPIEGAZIONE SEMPLICE (anche se odi la statistica)"):
     - La parte più larga = tanti giocatori hanno quel valore.  
     - La linea al centro = la mediana (50% sotto, 50% sopra).  
     - Se il violino è largo in alto → molti con valori alti. Largo in basso → molti con valori bassi.  
-    👉 Utile per capire **quanto è diffuso un certo valore** e non solo i valori tipici.  
+    👉 Utile per scovare i migliori/peggiori giocatori per ogni statistica.  
 
     ---
 
