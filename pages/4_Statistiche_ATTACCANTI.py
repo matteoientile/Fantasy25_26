@@ -60,7 +60,7 @@ def load_and_prepare(path):
     df["% Gol/Tiri"] = np.where(df["shots"]>0, df["Gf"]/df["shots"],0)
     df["Amm a partita"] = np.where(df["Pv"]>0, df["Amm"]/df["Pv"],0)
     df["Minuti a partita"] = np.where(df["games"]>0, df["time"]/df["games"],0)
-    df["Tiri a partita"] = np.where(df["games"]>0, df["shots"]/df["games"],0)
+    #df["Tiri a partita"] = np.where(df["games"]>0, df["shots"]/df["games"],0)
     df["key_passes a partita"] = np.where(df["games"]>0, df["key_passes"]/df["games"],0)
     df["% Rigori Segnati"] = np.where(df["Rc"]>0, df["R+"]/df["Rc"],0)
     df["Gf a partita"] = np.where(df["Pv"]>0, df["Gf"]/df["Pv"],0)
