@@ -1,22 +1,9 @@
 import streamlit as st
-
-st.markdown("### 📋 Listone Stagione 25/26")
-
-# Filtro ruolo
-ruolo = st.selectbox("Seleziona ruolo:", ["Tutti", "Portiere", "Difensore", "Centrocampista", "Attaccante"])
-
-# Ricerca nome
-search_name = st.text_input("Cerca giocatore:")
-
-df_listone = df_listone.copy()
-
-if ruolo != "Tutti":
-    df_listone = df_listone[df_listone["Ruolo"] == ruolo]
-
-if search_name:
-    df_listone = df_listone[df_listone["Nome"].str.contains(search_name, case=False, na=False)]
-
-st.dataframe(
-    df_listone.sort_values(by="Quotazione", ascending=False),
-    use_container_width=True
-)
+#---------------- STREAMLIT HEADER
+st.set_page_config(page_title="Fantacalcio 25/26 - Listone & Probabili Formazioni", layout="wide") 
+st.title("📋 Listone Stagione 25/26 & ⚽ Probabili Formazioni ")
+st.markdown("""
+Qui troverai 
+- i Link ai migliori siti per le Probabili Formazioni di Serie A
+- il Listone per l'asta 25/26
+""")
