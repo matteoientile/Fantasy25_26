@@ -4,7 +4,7 @@ import numpy as np
 
 #---------------- STREAMLIT HEADER
 st.set_page_config(page_title="Fantacalcio 25/26 - Listone & Probabili Formazioni", layout="wide") 
-st.title("📋 Listone Stagione 25/26 & ⚽ Probabili Formazioni ")
+st.title("📋 Listone Stagione 25/26 & ⚽ Formazioni Tipo")
 st.markdown("""
 Qui troverai 
 - il Listone Fantagazzetta per l'asta 25/26
@@ -15,7 +15,7 @@ Qui troverai
 st.sidebar.header("📌 Indice")
 st.sidebar.markdown("""
 - [📋 Listone Stagione 25/26](#listone-stagione-25-/-26)
-- [⚽ Probabili Formazioni](#probabili-formazioni)
+- [⚽ Formazioni Tipo Serie A 2025/26](#formazioni-tipo-serie-a-25-/-26)
 """)
 
 #========================= SECTION 1: LISTONE =========================
@@ -99,3 +99,15 @@ else:
 
 #========================= MOSTRA TABELLA =========================
 st.dataframe(df_listone.reset_index(drop=True), use_container_width=True)
+
+#========================= SECTION 2: FORMAZIONI TIPO =========================
+st.header("⚽ Formazioni Tipo Serie A 2025/26")
+
+st.markdown("""
+Per consultare le formazioni tipo aggiornate squadra per squadra, visita i seguenti link:
+
+- [Formazioni tipo Serie A 2025/26 – SOS Fanta](https://www.sosfanta.com/asta-fantacalcio/formazioni-tipo-serie-a-2025-2026-oggi-giocherebbero-cosi/)
+- [Probabili formazioni Serie A 2025/26 – Fantacalcio.it](https://www.fantacalcio.it/news/calcio-italia/29_07_2025/asta-fantacalcio-le-probabili-formazioni-della-serie-a-enilive-2025-26-480206)
+- [Formazioni Titolari Fantacalcio 2025/26 – Fantacalcio.it](https://www.goal.com/it/liste/fantacalcio-formazioni-titolari-serie-a-2025-2026-tutte-le-squadre-tipo/bltd96a64fe7af82a71#csfc709a336b92e528)
+""")
+
