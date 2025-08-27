@@ -211,7 +211,7 @@ pairs = [
     ("xA", "Ass", "📈 xA vs Assist - Centrocampisti 2022-2024"),
     ("key_passes", "Ass", "📈 Passaggi Chiave vs Ass - Centrocampisti 2022-2024"),
     ("Tiri a partita", "Gf a partita", "📈 Tiri a partita vs Gf - Centrocampisti 2022-2024"),
-    ("Tiri a partita", "Fm", "📈 Tiri a partita vs Fm - Centrocampisti 2022-2024"),
+    ("Tiri a partita", "Fm", "📈 Tiri a partita vs Fm - Centrocampisti 2022-2024")
 ]
 
 for x, y, title in pairs:
