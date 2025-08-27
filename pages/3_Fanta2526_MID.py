@@ -5,6 +5,7 @@ from plotly.subplots import make_subplots
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+import numpy as np
 
 #---------------- STREAMLIT HEADER
 st.set_page_config(page_title="Fantacalcio 25/26 - Centrocampisti", layout="wide") 
@@ -32,6 +33,15 @@ Utilizzeremo i seguenti simboli:
 def add_metrics(df, season_label=None):
     df = df.copy()
     
+    # Handle missing columns with default values
+    required_cols = ["xG", "xA", "Rp", "clean_sheet", "Au", "Gs", "Esp", "Amm", "R-", "Gf", "Ass", "shots", "Rc", "R+", "time", "games", "key_passes", "Pv"]
+    for col in required_cols:
+        if col not in df.columns:
+            df[col] = 0
+    
+    # Replace NaN and inf values with 0
+    df = df.replace([np.inf, -np.inf], 0).fillna(0)
+    
     df["xBonus"] = (3*df["xG"] + 1*df["xA"] + 3*df["Rp"] + 1*df["clean_sheet"]) - \
                    (2*df["Au"] + 1*df["Gs"] + 1*df["Esp"] + 0.5*df["Amm"] + 3*df["R-"])
     
@@ -41,17 +51,21 @@ def add_metrics(df, season_label=None):
     df["xG + xA (pts converted)"] = 3*df["xG"] + 1*df["xA"]
     df["G + A (pts converted)"] = 3*df["Gf"] + 1*df["Ass"]
     
-    df["% Gol/Tiri"] = df["Gf"] / df["shots"]
-    df["% Rigori Segnati"] = df["R+"] / df["Rc"]
+    # Safe division with zero handling
+    df["% Gol/Tiri"] = np.where(df["shots"] > 0, df["Gf"] / df["shots"], 0)
+    df["% Rigori Segnati"] = np.where(df["Rc"] > 0, df["R+"] / df["Rc"], 0)
     
-    df["Amm a partita"] = df["Amm"] / df["Pv"]
-    df["Minuti a partita"] = df["time"] / df["games"]
-    df["Tiri a partita"] = df["shots"] / df["games"]
-    df["key_passes a partita"] = df["key_passes"] / df["games"]
-    df["Gf a partita"] = df["Gf"] / df["Pv"]
+    df["Amm a partita"] = np.where(df["Pv"] > 0, df["Amm"] / df["Pv"], 0)
+    df["Minuti a partita"] = np.where(df["games"] > 0, df["time"] / df["games"], 0)
+    df["Tiri a partita"] = np.where(df["games"] > 0, df["shots"] / df["games"], 0)
+    df["key_passes a partita"] = np.where(df["games"] > 0, df["key_passes"] / df["games"], 0)
+    df["Gf a partita"] = np.where(df["Pv"] > 0, df["Gf"] / df["Pv"], 0)
     
     if season_label is not None:
         df["season"] = season_label
+    
+    # Replace any remaining NaN or inf values
+    df = df.replace([np.inf, -np.inf], 0).fillna(0)
     
     return df
 
@@ -60,16 +74,23 @@ drop_columns = ["Id","id","goals","assists","yellow_cards","red_cards","matched"
 
 @st.cache_data
 def load_and_prepare(path, season_label=None):
-    df = pd.read_excel(path)
-    df = df.drop(columns=drop_columns, errors='ignore')
-    df = add_metrics(df, season_label=season_label)
-    return df
+    try:
+        df = pd.read_excel(path)
+        df = df.drop(columns=drop_columns, errors='ignore')
+        df = add_metrics(df, season_label=season_label)
+        return df
+    except Exception as e:
+        st.error(f"Error loading {path}: {str(e)}")
+        return pd.DataFrame()
 
-df2022, df2023, df2024 = (
-    load_and_prepare("2022_23_Merged.xlsx", season_label="2022-23"),
-    load_and_prepare("2023_24_Merged.xlsx", season_label="2023-24"),
-    load_and_prepare("2024_25_Merged.xlsx", season_label="2024-25")
-)
+df2022 = load_and_prepare("2022_23_Merged.xlsx", season_label="2022-23")
+df2023 = load_and_prepare("2023_24_Merged.xlsx", season_label="2023-24")
+df2024 = load_and_prepare("2024_25_Merged.xlsx", season_label="2024-25")
+
+# Check if dataframes are empty
+if df2022.empty or df2023.empty or df2024.empty:
+    st.error("One or more data files could not be loaded. Please check file paths and formats.")
+    st.stop()
 
 #------------------------- PV FILTER
 min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
@@ -79,23 +100,53 @@ def filter_pv(df, min_pv):
 
 df2022, df2023, df2024 = filter_pv(df2022, min_pv), filter_pv(df2023, min_pv), filter_pv(df2024, min_pv)
 
-mid2022 = df2022[df2022["R"]=="C"]
-mid2023 = df2023[df2023["R"]=="C"]
-mid2024 = df2024[df2024["R"]=="C"]
+# Filter for midfielders with error handling
+mid2022 = df2022[df2022["R"]=="C"] if "R" in df2022.columns else pd.DataFrame()
+mid2023 = df2023[df2023["R"]=="C"] if "R" in df2023.columns else pd.DataFrame()
+mid2024 = df2024[df2024["R"]=="C"] if "R" in df2024.columns else pd.DataFrame()
+
+if mid2022.empty and mid2023.empty and mid2024.empty:
+    st.error("No midfielder data found. Please check if 'R' column exists and contains 'C' values.")
+    st.stop()
 
 #------------------------- MULTI SEARCH BOX
-all_names = pd.concat([mid2022["Nome"], mid2023["Nome"], mid2024["Nome"]]).unique()
-search_names = st.multiselect("Seleziona uno o più centrocampisti da **confrontare**", options=sorted(all_names), default=[])
+all_names = []
+for df in [mid2022, mid2023, mid2024]:
+    if not df.empty and "Nome" in df.columns:
+        all_names.extend(df["Nome"].unique())
+
+if all_names:
+    search_names = st.multiselect("Seleziona uno o più centrocampisti da **confrontare**", options=sorted(set(all_names)), default=[])
+else:
+    st.warning("No player names found in the data.")
+    search_names = []
 
 colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qualitative.Dark24
 symbols = ["circle","square","diamond","star","cross","x","triangle-up","triangle-down"]
 
 #========================= SECTION 0: CORRELATION MATRICES =========================
 st.header("📊 Matrice di correlazione - Centrocampisti")
-corrmid = (mid2022.corr(numeric_only=True) + mid2023.corr(numeric_only=True) + mid2024.corr(numeric_only=True)) / 3
-fig = px.imshow(corrmid, text_auto=".2f", color_continuous_scale='RdBu_r', aspect="auto", title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (CEN)")
-fig.update_layout(height=800)
-st.plotly_chart(fig, use_container_width=True)
+
+# Calculate correlation matrix with error handling
+try:
+    valid_dfs = [df for df in [mid2022, mid2023, mid2024] if not df.empty]
+    if valid_dfs:
+        corr_matrices = []
+        for df in valid_dfs:
+            corr = df.select_dtypes(include=[np.number]).corr()
+            corr_matrices.append(corr)
+        
+        # Average correlation matrices
+        corrmid = sum(corr_matrices) / len(corr_matrices)
+        
+        fig = px.imshow(corrmid, text_auto=".2f", color_continuous_scale='RdBu_r', aspect="auto", 
+                       title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (CEN)")
+        fig.update_layout(height=800)
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.warning("No valid data for correlation matrix.")
+except Exception as e:
+    st.error(f"Error creating correlation matrix: {str(e)}")
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Centrocampisti")
@@ -103,50 +154,90 @@ metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90","key_passes","Tiri a parti
            "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Esp"]
 
 def add_boxplot(fig, df, metric, col):
-    box = px.violin(df, y=metric, box=True, points="all", hover_data=["Nome","Squadra","Pv"])
-    for trace in box.data:
-        fig.add_trace(trace, row=1, col=col)
-    for i, name in enumerate(search_names):
-        highlight = df[df["Nome"]==name]
-        if not highlight.empty:
-            fig.add_trace(px.scatter(highlight, y=metric, hover_name="Nome")
-                          .update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]),
-                                         name=name, showlegend=True).data[0], row=1, col=col)
+    if df.empty or metric not in df.columns:
+        return
+    
+    try:
+        # Clean data for plotting
+        df_clean = df.dropna(subset=[metric])
+        if df_clean.empty:
+            return
+            
+        hover_cols = ["Nome","Squadra","Pv"] if all(col in df_clean.columns for col in ["Nome","Squadra","Pv"]) else None
+        
+        box = px.violin(df_clean, y=metric, box=True, points="all", hover_data=hover_cols)
+        for trace in box.data:
+            fig.add_trace(trace, row=1, col=col)
+            
+        # Add highlighted players
+        for i, name in enumerate(search_names):
+            if "Nome" in df_clean.columns:
+                highlight = df_clean[df_clean["Nome"]==name]
+                if not highlight.empty:
+                    scatter_trace = px.scatter(highlight, y=metric, hover_name="Nome").data[0]
+                    scatter_trace.update(marker=dict(size=15,color=colors[i % len(colors)],
+                                                   symbol=symbols[i % len(symbols)]),
+                                       name=name, showlegend=True)
+                    fig.add_trace(scatter_trace, row=1, col=col)
+    except Exception as e:
+        st.warning(f"Error creating boxplot for {metric}: {str(e)}")
 
 for metric in metrics:
     st.subheader(f"{metric} - Boxplot 2022-2024")
-    fig = make_subplots(rows=1, cols=3, subplot_titles=("2022","2023","2024"), horizontal_spacing=0.15)
-    add_boxplot(fig, mid2022, metric, col=1)
-    add_boxplot(fig, mid2023, metric, col=2)
-    add_boxplot(fig, mid2024, metric, col=3)
-    fig.update_layout(height=500,width=1200,title=f"{metric} - Centrocampisti 2022-2024", showlegend=True)
-    st.plotly_chart(fig, use_container_width=True)
+    try:
+        fig = make_subplots(rows=1, cols=3, subplot_titles=("2022","2023","2024"), horizontal_spacing=0.15)
+        add_boxplot(fig, mid2022, metric, col=1)
+        add_boxplot(fig, mid2023, metric, col=2)
+        add_boxplot(fig, mid2024, metric, col=3)
+        fig.update_layout(height=500,width=1200,title=f"{metric} - Centrocampisti 2022-2024", showlegend=True)
+        st.plotly_chart(fig, use_container_width=True)
+    except Exception as e:
+        st.error(f"Error creating boxplot for {metric}: {str(e)}")
 
 #========================= SECTION 2: REGRESSION =========================
 st.header("📈 Correlazioni Coppie di Variabili")
 
 def add_scatter(fig, df, x, y, col):
-    scatter = px.scatter(df, x=x, y=y, trendline="ols", hover_name="Nome", hover_data=["Squadra","Pv"])
-    for trace in scatter.data:
-        fig.add_trace(trace, row=1, col=col)
-    for i, name in enumerate(search_names):
-        highlight = df[df["Nome"]==name]
-        if not highlight.empty:
-            fig.add_trace(px.scatter(highlight, x=x, y=y, hover_name="Nome")
-                          .update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]),
-                                         name=name, showlegend=True).data[0], row=1, col=col)
+    if df.empty or x not in df.columns or y not in df.columns:
+        return
+    
+    try:
+        # Clean data for plotting - remove NaN and inf values
+        df_clean = df[[x, y, "Nome", "Squadra", "Pv"]].copy()
+        df_clean = df_clean.replace([np.inf, -np.inf], np.nan).dropna()
+        
+        if df_clean.empty:
+            return
+            
+        scatter = px.scatter(df_clean, x=x, y=y, trendline="ols", hover_name="Nome", 
+                           hover_data=["Squadra","Pv"])
+        for trace in scatter.data:
+            fig.add_trace(trace, row=1, col=col)
+            
+        # Add highlighted players
+        for i, name in enumerate(search_names):
+            highlight = df_clean[df_clean["Nome"]==name]
+            if not highlight.empty:
+                scatter_trace = px.scatter(highlight, x=x, y=y, hover_name="Nome").data[0]
+                scatter_trace.update(marker=dict(size=15,color=colors[i % len(colors)],
+                                               symbol=symbols[i % len(symbols)]),
+                                   name=name, showlegend=True)
+                fig.add_trace(scatter_trace, row=1, col=col)
+    except Exception as e:
+        st.warning(f"Error creating scatter plot for {x} vs {y}: {str(e)}")
 
 pairs = [("Mv","Fm"),("shots","Gf"),("Tiri a partita","Fm"),("Gf","Ass"),
          ("xG","Gf"),("xA","Ass"),("key_passes","Ass"),("Tiri a partita","Gf a partita"),("Gf","R+")]
 
 for x,y in pairs:
-    fig = make_subplots(rows=1,cols=3,subplot_titles=("2022","2023","2024"),horizontal_spacing=0.1)
-    for col,df in zip([1,2,3],[mid2022,mid2023,mid2024]):
-        add_scatter(fig, df, x, y, col)
-    fig.update_layout(height=500,width=1600,showlegend=True,title=f"{x} vs {y} - Centrocampisti 2022-2024")
-    for col in [1,2,3]:
-        fig.update_xaxes(title_text=x,row=1,col=col)
-        fig.update_yaxes(title_text=y,row=1,col=col)
-    st.plotly_chart(fig, use_container_width=True)
-
-
+    try:
+        fig = make_subplots(rows=1,cols=3,subplot_titles=("2022","2023","2024"),horizontal_spacing=0.1)
+        for col,df in zip([1,2,3],[mid2022,mid2023,mid2024]):
+            add_scatter(fig, df, x, y, col)
+        fig.update_layout(height=500,width=1600,showlegend=True,title=f"{x} vs {y} - Centrocampisti 2022-2024")
+        for col in [1,2,3]:
+            fig.update_xaxes(title_text=x,row=1,col=col)
+            fig.update_yaxes(title_text=y,row=1,col=col)
+        st.plotly_chart(fig, use_container_width=True)
+    except Exception as e:
+        st.error(f"Error creating scatter plot for {x} vs {y}: {str(e)}")
