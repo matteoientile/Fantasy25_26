@@ -15,9 +15,14 @@ Utilizzeremo i seguenti simboli:
 - Mv = Media Voto
 - Fm = Fanta Media
 - Pv = Partite a Voto
+- Gf = Gol Fatti
+- Ass = Assist
+- xG_per90 = Expected Goals per 90 Minuti
+- xA_per90 = Expected Assist per 90 Minuti
 - key_passess = Passaggi Chiave
-- shots = Tiri 
 - G + A (pts converted) = Somma dei Bonus (goal = +3, assist = +1)
+- Rc = Rigori Calciati
+- R+ = Rigori Segnati
 - Amm = Ammonizioni
 - Esp = Espulsioni
 """)
@@ -108,7 +113,7 @@ st.plotly_chart(fig, use_container_width=True)
 st.header("📊 Boxplot Centrocampisti")
 
 metrics = ["Mv", "Fm", "Gf", "Ass", "xG_per90", "xA_per90", "key_passes", "Tiri a partita", "G + A (pts converted)",
-           "Rc", "R+", "% Rigori Segnati", "Minuti a partita", "Amm", "Amm a partita"]
+           "Rc", "R+", "% Rigori Segnati", "Minuti a partita", "Amm", "Esp"]
 for metric in metrics:
     st.subheader(f"{metric} - Boxplot 2022-2024")
     
@@ -197,7 +202,8 @@ def add_scatter(fig, df, x, y, col):
 pairs = [
     ("Mv", "Fm", "📈 Mv vs Fm - Centrocampisti 2022-2024"),
     ("shots", "Gf", "📈 Tiri vs Gf - Centrocampisti 2022-2024"),
-    ("shots", "Fm", "📈 Tiri vs Fm - Centrocampisti 2022-2024"),
+    ("Tiri a partita", "Fm", "📈 Tiri a partita vs Fm - Centrocampisti 2022-2024"),
+    ("Gf", "Ass", "📈 Gol Fatti vs Assist - Centrocampisti 2022-2024"),
     ("xG", "Gf", "📈 xG vs Gol Fatti - Centrocampisti 2022-2024"),
     ("xA", "Ass", "📈 xA vs Assist - Centrocampisti 2022-2024"),
     ("key_passes", "Ass", "📈 Passaggi Chiave vs Ass - Centrocampisti 2022-2024")
