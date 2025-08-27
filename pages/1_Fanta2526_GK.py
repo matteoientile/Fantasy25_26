@@ -119,7 +119,10 @@ def add_scatter(fig, df, x, y, col):
         if not highlight.empty:
             fig.add_trace(px.scatter(highlight, x=x, y=y, hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
 
-pairs = [("Mv","Fm","📈 Mv vs Fm - Portieri 2022-2024"), ("clean_sheet","Fm","📈 Clean Sheet vs Fm - Portieri 2022-2024"), ("Gs","Fm","📈 Gs vs Fm - Portieri 2022-2024")]
+pairs = [("Mv","Fm","📈 Mv vs Fm - Portieri 2022-2024"), 
+         ("clean_sheet","Fm","📈 Clean Sheet vs Fm - Portieri 2022-2024"), 
+         ("Gs","Fm","📈 Gs vs Fm - Portieri 2022-2024")
+        ]
 
 for x,y,title in pairs:
     fig = make_subplots(rows=1,cols=3,subplot_titles=("2022","2023","2024"),horizontal_spacing=0.1)
