@@ -79,7 +79,10 @@ def filter_pv(df, min_pv):
 
 df2022, df2023, df2024 = filter_pv(df2022, min_pv), filter_pv(df2023, min_pv), filter_pv(df2024, min_pv)
 
-mid2022, mid2023, mid2024 = df2022[df2022["R"]=="C"], df2023[df2023["R"]=="C"], df2024[df2024["R"]=="C"]
+mid2022 = df2022[df2022["R"]=="C"].copy()
+mid2023 = df2023[df2023["R"]=="C"].copy()
+mid2024 = df2024[df2024["R"]=="C"].copy()
+
 
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([mid2022["Nome"], mid2023["Nome"], mid2024["Nome"]]).unique()
