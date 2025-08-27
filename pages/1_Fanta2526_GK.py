@@ -25,46 +25,31 @@ Utilizzeremo i seguenti simboli:
 #---------------- FEATURE ENGINEERING 
 def add_metrics(df, weights=None, fill_missing=True, fill_pv_zero=True, season_label=None):
     df = df.copy()
-    # Columns needed to calculate new feature
     required_cols = ["xG","xA","Rp","clean_sheet","Au","Gs","Esp","Amm","R-","Gf","Ass","Pv","Qt.I"]
-    # Fill with zeros
     if fill_missing:
         for c in required_cols:
             if c not in df.columns:
                 df[c] = 0
-    # NaN
     for c in required_cols:
-        df[c] = pd.to_numeric(df.get(c, 0), errors='coerce').fillna(0)
-    # Bonus evaluation
+        df[c] = pd.to_numeric(df.get(c,0), errors='coerce').fillna(0)
+
     if weights is None:
         weights = {'g':3,'a':1,'rp':3,'cs':1,'au':2,'gs':1,'esp':1,'amm':0.5,'r-':1}
-    # Metrics
-    df["xBonus"] = (
-        weights['g']*df["xG"] + weights['a']*df["xA"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]
-    ) - (
-        weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"]
-    )
-    df["actualBonus"] = (
-        weights['g']*df["Gf"] + weights['a']*df["Ass"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]
-    ) - (
-        weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"]
-    )
-    
+
+    df["xBonus"] = (weights['g']*df["xG"] + weights['a']*df["xA"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]) - (weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"])
+    df["actualBonus"] = (weights['g']*df["Gf"] + weights['a']*df["Ass"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]) - (weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"])
     df["xG + xA (pts converted)"] = weights['g']*df["xG"] + weights['a']*df["xA"]
     df["G + A (pts converted)"] = weights['g']*df["Gf"] + weights['a']*df["Ass"]
     df["Gs a partita"] = df["Gs"] / df["Pv"].replace({0: pd.NA})
-    
     if fill_pv_zero:
         df["Gs a partita"] = df["Gs a partita"].fillna(0)
     
-    # Calcolo ROI sicuro
+    # --- ROI ---
     df["ROI"] = df["Fm"] / df["Qt.I"].replace({0: pd.NA})
     df["ROI"] = df["ROI"].fillna(0)
-    
-    # Aggiungo etichetta stagione
+
     if season_label:
         df["season"] = season_label
-    
     return df
 
 #---------------- READ & PREPARE FILES
@@ -119,7 +104,7 @@ def add_boxplot(fig, df, col, metric):
         if not highlight.empty:
             fig.add_trace(px.scatter(highlight, y=metric, hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
 
-metrics = ["Mv","Fm", "ROI","Gs","Gs a partita","clean_sheet","Amm","Esp"]
+metrics = ["Mv","Fm","ROI","Gs","Gs a partita","clean_sheet","Amm","Esp"]
 for metric in metrics:
     st.subheader(f"{metric} - Boxplot 2022-2024")
     fig = make_subplots(rows=1, cols=3, subplot_titles=("2022","2023","2024"), horizontal_spacing=0.15)
@@ -141,10 +126,7 @@ def add_scatter(fig, df, x, y, col):
         if not highlight.empty:
             fig.add_trace(px.scatter(highlight, x=x, y=y, hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
 
-pairs = [("Mv","Fm","📈 Mv vs Fm - Portieri 2022-2024"), 
-         ("clean_sheet","Fm","📈 Clean Sheet vs Fm - Portieri 2022-2024"), 
-         ("Gs","Fm","📈 Gs vs Fm - Portieri 2022-2024")
-        ]
+pairs = [("Mv","Fm","📈 Mv vs Fm - Portieri 2022-2024"), ("clean_sheet","Fm","📈 Clean Sheet vs Fm - Portieri 2022-2024"), ("Gs","Fm","📈 Gs vs Fm - Portieri 2022-2024")]
 
 for x,y,title in pairs:
     fig = make_subplots(rows=1,cols=3,subplot_titles=("2022","2023","2024"),horizontal_spacing=0.1)
@@ -160,57 +142,4 @@ for x,y,title in pairs:
     st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 3: RADAR PLOT NORMALIZZATO =========================
-st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione")
-
-if search_names:
-    radar_metrics = ["Pv","Mv","Fm","Gs a partita","clean_sheet","Rp"]
-    seasons = {"2022-23":gk2022,"2023-24":gk2023,"2024-25":gk2024}
-    cols = st.columns(len(seasons))
-    for col,(season_name,df_season) in zip(cols,seasons.items()):
-        df_selected = df_season[df_season["Nome"].isin(search_names)][["Nome"]+radar_metrics].copy()
-        if df_selected.empty:
-            col.info(f"Nessun giocatore selezionato in {season_name}.")
-            continue
-        df_selected = df_selected.groupby("Nome")[radar_metrics].mean().reset_index()
-        df_norm = df_selected.copy()
-        for metric in radar_metrics:
-            max_val = df_norm[metric].max()
-            df_norm[metric] = df_norm[metric]/max_val if max_val!=0 else 0
-        df_long = df_norm.melt(id_vars="Nome", value_vars=radar_metrics, var_name="Metrica", value_name="Valore")
-        fig = px.line_polar(df_long, r="Valore", theta="Metrica", color="Nome", line_close=True, markers=True)
-        fig.update_traces(fill='toself')
-        fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0,1], tickfont=dict(color="black"))), showlegend=True, title=season_name)
-        col.plotly_chart(fig, use_container_width=True)
-else:
-    st.info("Seleziona almeno un giocatore per visualizzare il radar plot.")
-
-#========================= SECTION 4: "FASCE" CLUSTERING =========================
-def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
-    df = df.copy() 
-    df_filled = df[numericalCols].fillna(0)
-    scaler = StandardScaler()
-    df_scaled = scaler.fit_transform(df_filled)
-    model = KMeans(n_clusters=nclusters, random_state=42)
-    df["cluster"] = model.fit_predict(df_scaled).astype(str)
-    pca = PCA(n_components=2)
-    pca_result = pca.fit_transform(df_scaled)
-    df["PCA1"], df["PCA2"] = pca_result[:,0], pca_result[:,1]
-    vivid_colors = ["#e6194b","#3cb44b","#ffe119","#4363d8","#f58231","#911eb4","#46f0f0","#f032e6"]
-    color_sequence = [vivid_colors[i % len(vivid_colors)] for i in range(nclusters)]
-    fig = px.scatter(df, x="PCA1", y="PCA2", color="cluster", hover_data=["Nome","Squadra","Pv","Fm"], title=f"Cluster {ruolo}", color_discrete_sequence=color_sequence)
-    if highlight_names:
-        for name in highlight_names:
-            highlight = df[df["Nome"]==name]
-            if not highlight.empty:
-                fig.add_trace(px.scatter(highlight,x="PCA1",y="PCA2",hover_name="Nome").update_traces(marker=dict(size=15,color='black',symbol='star'),name=name,showlegend=True).data[0])
-    fig.update_traces(marker=dict(size=12,line=dict(width=1,color='DarkSlateGrey')))
-    st.plotly_chart(fig, use_container_width=True)
-
-st.header("🧤 Clustering Portieri")
-numericalCols_gk = ["Pv","Mv","Fm","Gs","Rp","clean_sheet"]
-n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 6, 3)
-if st.button("Esegui clustering portieri 2024"):
-    KmeansPCA(gk2024, numericalCols_gk, n_clusters, ruolo="Portieri 2024", highlight_names=search_names)
-
-#========================= SECTION X: OTHER METRICS =========================
-st.header("⚡ Altre metriche")
+st.header("📊 Confronto Radar dei Giocatori Selezion
