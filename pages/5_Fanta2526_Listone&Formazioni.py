@@ -4,7 +4,7 @@ st.set_page_config(page_title="Fantacalcio 25/26 - Listone & Probabili Formazion
 st.title("📋 Listone Stagione 25/26 & ⚽ Probabili Formazioni ")
 st.markdown("""
 Qui troverai 
-- il Listone per l'asta 25/26
+- il Listone Fantagazzetta per l'asta 25/26
 - i Link ai migliori siti per le Probabili Formazioni di Serie A
 """)
 #========================= SIDEBAR: INDICE =========================
