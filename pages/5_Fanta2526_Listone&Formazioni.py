@@ -31,7 +31,7 @@ df_listone = df_listone.rename(columns={
 })
 
 # Aggiunta Over/Under performance
-df_listone["Prezzo Fantagazzetta / 500C."] = df_listone["Prezzo Fantagazzetta / 500C."]/2
+df_listone["Prezzo Fantagazzetta / 500C."] = np.ceil(df_listone["Prezzo Fantagazzetta / 500C."] / 2).astype(int)
 df_stats["xG + xA (pts converted)"] = 3*df_stats["xG"] + 1*df_stats["xA"]
 df_stats["G + A (pts converted)"] = 3*df_stats["Gf"] + 1*df_stats["Ass"]
 df_stats["Over/Under performance %"] = np.where(
