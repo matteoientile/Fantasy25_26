@@ -16,6 +16,9 @@ Utilizzeremo i seguenti simboli:
 - Fm = Fanta Media
 - Gs = Gol Subiti
 - Pv = Partite a Voto
+- clean_sheet = Partite a Rete Inviolata
+- Amm = Ammonizioni
+- Esp = Espulsioni
 """)
 
 #---------------- READ FILES
