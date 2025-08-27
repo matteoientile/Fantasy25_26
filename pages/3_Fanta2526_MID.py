@@ -35,7 +35,7 @@ st.sidebar.markdown("""
 - [📊 Boxplot Centrocampisti](#boxplot-difensori)
 - [📈 Correlazioni Coppie di Variabili](#correlazioni-coppie-di-variabili)
 - [📊 Confronto Radar dei Giocatori Selezionati per Stagione](#confronto-radar-dei-giocatori-selezionati-per-stagione)
-- [📐 Clustering Centrocampisti](#clustering-difensori)
+- [📐 Clustering Centrocampisti](#clustering-centrocampisti)
 - [⚡ Altre metriche](#altre-metriche)
 """)
 
