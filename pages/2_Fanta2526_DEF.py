@@ -66,15 +66,6 @@ def add_metrics(df, season_label=None):
     df["Tiri a partita"] = df["shots"] / df["games"].replace({0: np.nan})
     df["key_passes a partita"] = df["key_passes"] / df["games"].replace({0: np.nan})
     
-    # Efficienza realizzativa
-    df["Efficienza realizzativa (Gol)"] = np.where(df["xG"]>0, df["Gf"]/df["xG"], 0)
-    df["Efficienza realizzativa (Assist)"] = np.where(df["xA"]>0, df["Ass"]/df["xA"], 0)
-
-    # Pulizia colonne: NaN / inf → 0
-    for col in df.columns:
-        if df[col].dtype.kind in 'fc':  # solo float/int
-            df[col] = df[col].replace([np.inf, -np.inf, np.nan], 0)
-    
     # Season label
     if season_label:
         df["season"] = season_label
@@ -150,7 +141,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Difensori")
-metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90", "Efficienza realizzativa (Gol)", "Efficienza realizzativa (Assist)", "key_passes","Tiri a partita","G + A (pts converted)",
+metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90", "key_passes","Tiri a partita","G + A (pts converted)",
            "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Amm a partita"]
 
 def add_boxplot(fig, df, col, metric):
