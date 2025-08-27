@@ -52,17 +52,17 @@ df_stats = df_stats[cols_stats]
 
 # Rinomina le colonne per chiarezza
 df_stats = df_stats.rename(columns={
-    "Mv": "Media Voto a.p. ",
-    "Fm": "Fanta Media a.p.",
-    "Pv": "Partite a Voto a.p.",
-    "Gf": "Gol Fatti a.p.",
-    "Ass": "Assist a.p.",
-    "Gs": "Gol Subiti a.p.",
-    "clean_sheet": "Clean Sheet a.p.",
-    "Amm" : "Ammonizioni a.p",
-    "Esp" : "Espulsioni a.p",
-    "Rc": "Rigori calciati a.p.",
-    "Over/Under performance %" : "Over/Under performance [%] a.p."
+    "Mv": "Media Voto (24/25) ",
+    "Fm": "Fanta Media (24/25)",
+    "Pv": "Partite a Voto (24/25)",
+    "Gf": "Gol Fatti (24/25)",
+    "Ass": "Assist (24/25)",
+    "Gs": "Gol Subiti (24/25)",
+    "clean_sheet": "Clean Sheet (24/25)",
+    "Amm" : "Ammonizioni (24/25)",
+    "Esp" : "Espulsioni (24/25)",
+    "Rc": "Rigori calciati (24/25)",
+    "Over/Under performance %" : "Over/Under performance [%] (24/25)"
 })
 
 # Merge sul nome
