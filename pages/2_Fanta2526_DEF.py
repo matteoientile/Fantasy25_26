@@ -56,24 +56,29 @@ def add_metrics(df, season_label=None):
     df["G + A (pts converted)"] = 3*df["Gf"] + 1*df["Ass"]
     
     # %
-    df["% Gol/Tiri"] = df["Gf"] / df["shots"]
-    df["% Rigori Segnati"] = df["R+"] / df["Rc"]
+    df["% Gol/Tiri"] = df["Gf"] / df["shots"].replace({0: np.nan})
+    df["% Rigori Segnati"] = df["R+"] / df["Rc"].replace({0: np.nan})
     
     # stats_per90
-    df["Amm a partita"] = df["Amm"] / df["Pv"]
-    df["Minuti a partita"] = df["time"] / df["games"]
-    df["Tiri a partita"] = df["shots"] / df["games"]
-    df["key_passes a partita"] = df["key_passes"] / df["games"]
-    df["Efficienza realizzativa (Gol)"] = np.where(df["xG"] > 0, df["Gf"] / df["xG"], 0)
-    df["Efficienza realizzativa (Assist)"] = np.where(df["xA"] > 0, df["Ass"] / df["xA"], 0)
-    df["Efficienza realizzativa (Gol)"] = df["Efficienza realizzativa (Gol)"].replace([np.inf, -np.inf, np.nan], 0)
-    df["Efficienza realizzativa (Assist)"] = df["Efficienza realizzativa (Assist)"].replace([np.inf, -np.inf, np.nan], 0)
-    # Season label
-    if season_label is not None:
-        df["season"] = season_label
+    df["Amm a partita"] = df["Amm"] / df["Pv"].replace({0: np.nan})
+    df["Minuti a partita"] = df["time"] / df["games"].replace({0: np.nan})
+    df["Tiri a partita"] = df["shots"] / df["games"].replace({0: np.nan})
+    df["key_passes a partita"] = df["key_passes"] / df["games"].replace({0: np.nan})
     
-    return df
+    # Efficienza realizzativa
+    df["Efficienza realizzativa (Gol)"] = np.where(df["xG"]>0, df["Gf"]/df["xG"], 0)
+    df["Efficienza realizzativa (Assist)"] = np.where(df["xA"]>0, df["Ass"]/df["xA"], 0)
 
+    # Pulizia colonne: NaN / inf → 0
+    for col in df.columns:
+        if df[col].dtype.kind in 'fc':  # solo float/int
+            df[col] = df[col].replace([np.inf, -np.inf, np.nan], 0)
+    
+    # Season label
+    if season_label:
+        df["season"] = season_label
+
+    return df
 
 #---------------- READ & PREPARE FILES
 drop_columns = ["Id","id","goals","assists","yellow_cards","red_cards","matched"]
@@ -85,11 +90,9 @@ def load_and_prepare(path, season_label=None):
     df = add_metrics(df, season_label=season_label)
     return df
 
-df2022, df2023, df2024 = (
-    load_and_prepare("2022_23_Merged.xlsx", season_label="2022-23"),
-    load_and_prepare("2023_24_Merged.xlsx", season_label="2023-24"),
-    load_and_prepare("2024_25_Merged.xlsx", season_label="2024-25")
-)
+df2022 = load_and_prepare("2022_23_Merged.xlsx","2022-23")
+df2023 = load_and_prepare("2023_24_Merged.xlsx","2023-24")
+df2024 = load_and_prepare("2024_25_Merged.xlsx","2024-25")
 
 #------------------------- PV FILTER
 min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
