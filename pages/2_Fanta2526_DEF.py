@@ -41,7 +41,7 @@ st.sidebar.markdown("""
 """)
 
 #---------------- FEATURE ENGINEERING
-def add_metrics(df):
+def add_metrics(df, season_label=None):
     df = df.copy()
     
     # Bonus
@@ -64,6 +64,10 @@ def add_metrics(df):
     df["Minuti a partita"] = df["time"] / df["games"]
     df["Tiri a partita"] = df["shots"] / df["games"]
     df["key_passes a partita"] = df["key_passes"] / df["games"]
+    
+    # Season label
+    if season_label is not None:
+        df["season"] = season_label
     
     return df
 
