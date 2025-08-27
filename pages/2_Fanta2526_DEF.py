@@ -125,6 +125,16 @@ def2022["clean_sheet_def"] = def2022["Squadra"].map(cs_2022)
 def2023["clean_sheet_def"] = def2023["Squadra"].map(cs_2023)
 def2024["clean_sheet_def"] = def2024["Squadra"].map(cs_2024)
 
+
+def2022["Efficienza realizzativa (Gol)"] = np.where(def2022["xG"]>0, def2022["Gf"]/def2022["xG"], 0)
+def2022["Efficienza realizzativa (Assist)"] = np.where(def2022["xA"]>0, def2022["Ass"]/def2022["xA"], 0)
+
+def2023["Efficienza realizzativa (Gol)"] = np.where(def2023["xG"]>0, def2023["Gf"]/def2023["xG"], 0)
+def2023["Efficienza realizzativa (Assist)"] = np.where(def2023["xA"]>0, def2023["Ass"]/def2023["xA"], 0)
+
+def2024["Efficienza realizzativa (Gol)"] = np.where(def2024["xG"]>0, def2024["Gf"]/def2024["xG"], 0)
+def2024["Efficienza realizzativa (Assist)"] = np.where(def2024["xA"]>0, def2024["Ass"]/def2024["xA"], 0)
+
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([def2022["Nome"], def2023["Nome"], def2024["Nome"]]).unique()
 search_names = st.multiselect("Seleziona uno o più difensori da **confrontare**", options=sorted(all_names), default=[])
@@ -141,7 +151,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Difensori")
-metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90", "key_passes","Tiri a partita","G + A (pts converted)",
+metrics = ["Mv","Fm","Gf","Ass", "Efficienza realizzativa (Gol)", "Efficienza realizzativa (Assist)","xG_per90","xA_per90", "key_passes","Tiri a partita","G + A (pts converted)",
            "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Amm a partita"]
 
 def add_boxplot(fig, df, col, metric):
