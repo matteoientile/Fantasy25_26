@@ -116,6 +116,15 @@ mid2022 = df2022[df2022["R"]=="C"] if "R" in df2022.columns else pd.DataFrame()
 mid2023 = df2023[df2023["R"]=="C"] if "R" in df2023.columns else pd.DataFrame()
 mid2024 = df2024[df2024["R"]=="C"] if "R" in df2024.columns else pd.DataFrame()
 
+mid2022["Efficienza realizzativa (Gol)"] = np.where(mid2022["xG"]>0, mid2022["Gf"]/mid2022["xG"], 0)
+mid2022["Efficienza realizzativa (Assist)"] = np.where(mid2022["xA"]>0, mid2022["Ass"]/mid2022["xA"], 0)
+
+mid2023["Efficienza realizzativa (Gol)"] = np.where(mid2023["xG"]>0, mid2023["Gf"]/mid2023["xG"], 0)
+mid2023["Efficienza realizzativa (Assist)"] = np.where(mid2023["xA"]>0, mid2023["Ass"]/mid2023["xA"], 0)
+
+mid2024["Efficienza realizzativa (Gol)"] = np.where(mid2024["xG"]>0, mid2024["Gf"]/mid2024["xG"], 0)
+mid2024["Efficienza realizzativa (Assist)"] = np.where(mid2024["xA"]>0, mid2024["Ass"]/mid2024["xA"], 0)
+
 if mid2022.empty and mid2023.empty and mid2024.empty:
     st.error("No midfielder data found. Please check if 'R' column exists and contains 'C' values.")
     st.stop()
