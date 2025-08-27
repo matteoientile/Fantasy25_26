@@ -41,34 +41,32 @@ st.sidebar.markdown("""
 """)
 
 #---------------- FEATURE ENGINEERING
-def add_metrics(df, weights=None, fill_missing=True, fill_pv_zero=True, season_label=None):
+def add_metrics(df):
     df = df.copy()
-    required_cols = ["xG","xA","Rp","clean_sheet","Au","Gs","Esp","Amm","R-","Gf","Ass","Pv","shots","key_passes","time","games","Rc","R+"]
-    if fill_missing:
-        for c in required_cols:
-            if c not in df.columns:
-                df[c] = 0
-    for c in required_cols:
-        df[c] = pd.to_numeric(df.get(c,0), errors='coerce').fillna(0)
-
-    if weights is None:
-        weights = {'g':3,'a':1,'rp':3,'cs':1,'au':2,'gs':1,'esp':1,'amm':0.5,'r-':3}
-
-    df["xBonus"] = (weights['g']*df["xG"] + weights['a']*df["xA"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]) - (weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"])
-    df["actualBonus"] = (weights['g']*df["Gf"] + weights['a']*df["Ass"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]) - (weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"])
-    df["xG + xA (pts converted)"] = weights['g']*df["xG"] + weights['a']*df["xA"]
-    df["G + A (pts converted)"] = weights['g']*df["Gf"] + weights['a']*df["Ass"]
-    df["% Gol/Tiri"] = df["Gf"] / df["shots"].replace({0: pd.NA})
-    df["Amm a partita"] = df["Amm"] / df["Pv"].replace({0: pd.NA})
-    df["Minuti a partita"] = df["time"] / df["games"].replace({0: pd.NA})
+    
+    # Bonus
+    df["xBonus"] = (3*df["xG"] + 1*df["xA"] + 3*df["Rp"] + 1*df["clean_sheet"]) - \
+                   (2*df["Au"] + 1*df["Gs"] + 1*df["Esp"] + 0.5*df["Amm"] + 3*df["R-"])
+    
+    df["actualBonus"] = (3*df["Gf"] + 1*df["Ass"] + 3*df["Rp"] + 1*df["clean_sheet"]) - \
+                        (2*df["Au"] + 1*df["Gs"] + 1*df["Esp"] + 0.5*df["Amm"] + 3*df["R-"])
+    
+    # Goal & assist
+    df["xG + xA (pts converted)"] = 3*df["xG"] + 1*df["xA"]
+    df["G + A (pts converted)"] = 3*df["Gf"] + 1*df["Ass"]
+    
+    # %
+    df["% Gol/Tiri"] = df["Gf"] / df["shots"]
+    df["% Rigori Segnati"] = df["R+"] / df["Rc"]
+    
+    # stats_per90
+    df["Amm a partita"] = df["Amm"] / df["Pv"]
+    df["Minuti a partita"] = df["time"] / df["games"]
     df["Tiri a partita"] = df["shots"] / df["games"]
-    df["key_passes a partita"] = df["key_passes"] / df["games"].replace({0: pd.NA})
-    df["% Rigori Segnati"] = df["R+"] / df["Rc"].replace({0: pd.NA})
-    if fill_pv_zero:
-        df.fillna(0, inplace=True)
-    if season_label:
-        df["season"] = season_label
+    df["key_passes a partita"] = df["key_passes"] / df["games"]
+    
     return df
+
 
 #---------------- READ & PREPARE FILES
 drop_columns = ["Id","id","goals","assists","yellow_cards","red_cards","matched"]
