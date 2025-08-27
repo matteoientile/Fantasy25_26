@@ -142,4 +142,56 @@ for x,y,title in pairs:
     st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 3: RADAR PLOT NORMALIZZATO =========================
-st.header("📊 Confronto Radar dei Giocatori Selezion
+st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione")
+if search_names:
+    radar_metrics = ["Pv","Mv","Fm","Gs a partita","clean_sheet","Rp"]
+    seasons = {"2022-23":gk2022,"2023-24":gk2023,"2024-25":gk2024}
+    cols = st.columns(len(seasons))
+    for col,(season_name,df_season) in zip(cols,seasons.items()):
+        df_selected = df_season[df_season["Nome"].isin(search_names)][["Nome"]+radar_metrics].copy()
+        if df_selected.empty:
+            col.info(f"Nessun giocatore selezionato in {season_name}.")
+            continue
+        df_selected = df_selected.groupby("Nome")[radar_metrics].mean().reset_index()
+        df_norm = df_selected.copy()
+        for metric in radar_metrics:
+            max_val = df_norm[metric].max()
+            df_norm[metric] = df_norm[metric]/max_val if max_val!=0 else 0
+        df_long = df_norm.melt(id_vars="Nome", value_vars=radar_metrics, var_name="Metrica", value_name="Valore")
+        fig = px.line_polar(df_long, r="Valore", theta="Metrica", color="Nome", line_close=True, markers=True)
+        fig.update_traces(fill='toself')
+        fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0,1], tickfont=dict(color="black"))), showlegend=True, title=season_name)
+        col.plotly_chart(fig, use_container_width=True)
+else:
+    st.info("Seleziona almeno un giocatore per visualizzare il radar plot.")
+
+#========================= SECTION 4: "FASCE" CLUSTERING =========================
+def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
+    df = df.copy() 
+    df_filled = df[numericalCols].fillna(0)
+    scaler = StandardScaler()
+    df_scaled = scaler.fit_transform(df_filled)
+    model = KMeans(n_clusters=nclusters, random_state=42)
+    df["cluster"] = model.fit_predict(df_scaled).astype(str)
+    pca = PCA(n_components=2)
+    pca_result = pca.fit_transform(df_scaled)
+    df["PCA1"], df["PCA2"] = pca_result[:,0], pca_result[:,1]
+    vivid_colors = ["#e6194b","#3cb44b","#ffe119","#4363d8","#f58231","#911eb4","#46f0f0","#f032e6"]
+    color_sequence = [vivid_colors[i % len(vivid_colors)] for i in range(nclusters)]
+    fig = px.scatter(df, x="PCA1", y="PCA2", color="cluster", hover_data=["Nome","Squadra","Pv","Fm"], title=f"Cluster {ruolo}", color_discrete_sequence=color_sequence)
+    if highlight_names:
+        for name in highlight_names:
+            highlight = df[df["Nome"]==name]
+            if not highlight.empty:
+                fig.add_trace(px.scatter(highlight,x="PCA1",y="PCA2",hover_name="Nome").update_traces(marker=dict(size=15,color='black',symbol='star'),name=name,showlegend=True).data[0])
+    fig.update_traces(marker=dict(size=12,line=dict(width=1,color='DarkSlateGrey')))
+    st.plotly_chart(fig, use_container_width=True)
+
+st.header("🧤 Clustering Portieri")
+numericalCols_gk = ["Pv","Mv","Fm","Gs","Rp","clean_sheet"]
+n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 6, 3)
+if st.button("Esegui clustering portieri 2024"):
+    KmeansPCA(gk2024, numericalCols_gk, n_clusters, ruolo="Portieri 2024", highlight_names=search_names)
+
+#========================= SECTION X: OTHER METRICS =========================
+st.header("⚡ Altre metriche")
