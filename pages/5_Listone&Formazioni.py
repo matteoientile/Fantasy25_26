@@ -12,6 +12,7 @@ Qui troverai
 
 Nel listone, sono riportate una serie di statistiche relative all'anno scorso. A parte le più ovvie, può essere particolarmente utile
 - Over/Under performance [%] = se positivo, vuol dire che il giocatore ha prodotto più bonus rispetto a quelli attesi; se negativo, il giocatore ha underperformato
+- Nuovo Arrivo = indica se il giocatore ha giocato nella Serie 24/25, oppure è un nuovo arrivo
 """)
 
 #========================= SIDEBAR: INDEX =========================
