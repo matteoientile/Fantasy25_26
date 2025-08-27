@@ -170,8 +170,9 @@ except Exception as e:
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Centrocampisti")
-metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90", "key_passes","Tiri a partita","G + A (pts converted)",
-           "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Esp", "Efficienza realizzativa (Gol)"]
+metrics = ["Mv","Fm","Gf","Ass", "Efficienza realizzativa (Gol)", "Efficienza realizzativa (Assist)", 
+           "xG_per90","xA_per90", "key_passes","Tiri a partita","G + A (pts converted)", 
+           "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Esp"]
 
 def add_boxplot(fig, df, metric, col):
     if df.empty or metric not in df.columns:
