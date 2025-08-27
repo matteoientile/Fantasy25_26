@@ -25,7 +25,10 @@ st.header("📋 Listone Stagione 25/26 (con statistiche 24/25)")
 df_listone = pd.read_excel("Quotazioni_Fantacalcio_Stagione_2025_26.xlsx")
 df_stats = pd.read_excel("2024_25_Merged.xlsx")
 
+df.rename(columns={"Qt.A": "Quotazione Fantagazzetta", "FMV": "Prezzo Fantagazzetta / 500C."})
+
 # Aggiunta Over/Under performance
+df_stats["Prezzo Fantagazzetta / 500C."] = df_stats["Prezzo Fantagazzetta / 500C."]/2
 df_stats["xG + xA (pts converted)"] = 3*df_stats["xG"] + 1*df_stats["xA"]
 df_stats["G + A (pts converted)"] = 3*df_stats["Gf"] + 1*df_stats["Ass"]
 df_stats["Over/Under performance %"] = np.where(
