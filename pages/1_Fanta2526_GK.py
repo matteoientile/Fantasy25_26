@@ -35,7 +35,7 @@ st.sidebar.markdown("""
 #---------------- FEATURE ENGINEERING 
 def add_metrics(df, weights=None, fill_missing=True, fill_pv_zero=True, season_label=None):
     df = df.copy()
-    required_cols = ["xG","xA","Rp","clean_sheet","Au","Gs","Esp","Amm","R-","Gf","Ass","Pv","Qt.I"]
+    required_cols = ["xG","xA","Rp","clean_sheet","Au","Gs","Esp","Amm","R-","Gf","Ass","Pv"]
     if fill_missing:
         for c in required_cols:
             if c not in df.columns:
@@ -55,8 +55,6 @@ def add_metrics(df, weights=None, fill_missing=True, fill_pv_zero=True, season_l
     df["Qt.I"].replace(0, 1, inplace=True)
     if fill_pv_zero:
         df["Gs a partita"] = df["Gs a partita"].fillna(0)
-    df["ROI"] = df["Fm"] / df["Qt.I"]
-
     if season_label:
         df["season"] = season_label
     return df
@@ -114,7 +112,7 @@ def add_boxplot(fig, df, col, metric):
         if not highlight.empty:
             fig.add_trace(px.scatter(highlight, y=metric, hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
 
-metrics = ["Mv","Fm","Gs","Gs a partita","clean_sheet","Amm","Esp","ROI"]
+metrics = ["Mv","Fm","Gs","Gs a partita","clean_sheet","Amm","Esp"]
 for metric in metrics:
     st.subheader(f"{metric} - Boxplot 2022-2024")
     fig = make_subplots(rows=1, cols=3, subplot_titles=("2022","2023","2024"), horizontal_spacing=0.15)
