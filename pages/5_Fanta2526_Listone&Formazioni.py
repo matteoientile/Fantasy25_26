@@ -30,14 +30,14 @@ df_stats = df_stats[cols_stats]
 
 # Rinomina le colonne per chiarezza
 df_stats = df_stats.rename(columns={
-    "Mv": "Mv anno precedente",
-    "Fm": "Fm anno precedente",
-    "Pv": "Pv anno precedente",
-    "Gf": "Gf anno precedente",
-    "Ass": "Ass anno precedente",
-    "Rc": "Rc anno precedente",
-    "Gs": "Gs anno precedente",
-    "clean_sheet": "clean_sheet anno precedente"
+    "Mv": "Media Voto a.p. ",
+    "Fm": "Fanta Media a.p.",
+    "Pv": "Partite a Voto a.p.",
+    "Gf": "Gol Fatti a.p.",
+    "Ass": "Assist a.p.",
+    "Rc": "Rigori calciati a.p.",
+    "Gs": "Gol Subiti a.p.",
+    "clean_sheet": "Clean Sheet a.p."
 })
 
 # Merge sul nome
