@@ -81,6 +81,15 @@ stk2022 = df2022[df2022["R"]=="A"]
 stk2023 = df2023[df2023["R"]=="A"]
 stk2024 = df2024[df2024["R"]=="A"]
 
+stk2022["Efficienza realizzativa (Gol)"] = np.where(stk2022["xG"]>0, stk2022["Gf"]/stk2022["xG"], 0)
+stk2022["Efficienza realizzativa (Assist)"] = np.where(stk2022["xA"]>0, stk2022["Ass"]/stk2022["xA"], 0)
+
+stk2023["Efficienza realizzativa (Gol)"] = np.where(stk2023["xG"]>0, stk2023["Gf"]/stk2023["xG"], 0)
+stk2023["Efficienza realizzativa (Assist)"] = np.where(stk2023["xA"]>0, stk2023["Ass"]/stk2023["xA"], 0)
+
+stk2024["Efficienza realizzativa (Gol)"] = np.where(stk2024["xG"]>0, stk2024["Gf"]/stk2024["xG"], 0)
+stk2024["Efficienza realizzativa (Assist)"] = np.where(stk2024["xA"]>0, stk2024["Ass"]/stk2024["xA"], 0)
+
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([stk2022["Nome"], stk2023["Nome"], stk2024["Nome"]]).unique()
 search_names = st.multiselect("Seleziona uno o più attaccanti da **confrontare**", options=sorted(all_names), default=[])
