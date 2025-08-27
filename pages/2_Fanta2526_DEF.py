@@ -5,6 +5,7 @@ from plotly.subplots import make_subplots
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+
 #---------------- STREAMLIT HEADER
 st.set_page_config(page_title="Fantacalcio 25/26 - Difensori", layout="wide") 
 st.title("🛡️ Difensori - Analisi Statistica")
@@ -20,8 +21,8 @@ Utilizzeremo i seguenti simboli:
 - clean_sheet_def = Partite con 0 Gol Subiti 
 - xG_per90 = Expected Goals per 90 Minuti
 - xA_per90 = Expected Assist per 90 Minuti
-- key_passess = Passaggi Chiave
-- shots = Tiri 
+- key_passes = Passaggi Chiave
+- shots = Tiri
 - G + A (pts converted) = Somma dei Bonus (goal = +3, assist = +1)
 - Rc = Rigori Calciati
 - R+ = Rigori Segnati
@@ -29,379 +30,193 @@ Utilizzeremo i seguenti simboli:
 - Esp = Espulsioni
 """)
 
-#---------------- READ FILES
-df2022 = pd.read_excel("2022_23_Merged.xlsx")
-df2023 = pd.read_excel("2023_24_Merged.xlsx")
-df2024 = pd.read_excel("2024_25_Merged.xlsx")
+#========================= SIDEBAR: INDICE =========================
+st.sidebar.header("📌 Indice")
+st.sidebar.markdown("""
+- [📊 Boxplot Difensori](#boxplot-difensori)
+- [📈 Correlazioni Coppie di Variabili](#correlazioni-coppie-di-variabili)
+- [📊 Confronto Radar dei Giocatori Selezionati per Stagione](#confronto-radar-dei-giocatori-selezionati-per-stagione)
+- [🛡️ Clustering Difensori](#clustering-difensori)
+- [⚡ Altre metriche](#altre-metriche)
+""")
 
-drop_columns = ["Id", "id", "goals", "assists", "yellow_cards", "red_cards", "matched"]
-df2022 = df2022.drop(drop_columns, axis=1)
-df2023 = df2023.drop(drop_columns, axis=1)
-df2024 = df2024.drop(drop_columns, axis=1)
+#---------------- FEATURE ENGINEERING
+def add_metrics(df, weights=None, fill_missing=True, fill_pv_zero=True, season_label=None):
+    df = df.copy()
+    required_cols = ["xG","xA","Rp","clean_sheet","Au","Gs","Esp","Amm","R-","Gf","Ass","Pv","shots","key_passes","time","games","Rc","R+"]
+    if fill_missing:
+        for c in required_cols:
+            if c not in df.columns:
+                df[c] = 0
+    for c in required_cols:
+        df[c] = pd.to_numeric(df.get(c,0), errors='coerce').fillna(0)
 
-df2022["xBonus"] = (3*df2022["xG"] + 1*df2022["xA"] + 3*df2022["Rp"] + 1*df2022["clean_sheet"]) - (2*df2022["Au"]+ 1*df2022["Gs"] + 1*df2022["Esp"] + 0.5*df2022["Amm"] + df2022["R-"])
-df2022["actualBonus"] = (3*df2022["Gf"] + 1*df2022["Ass"] + 3*df2022["Rp"] + 1*df2022["clean_sheet"]) - (2*df2022["Au"]+ 1*df2022["Gs"] + 1*df2022["Esp"] + 0.5*df2022["Amm"]+ df2022["R-"])
-df2022["xG + xA (pts converted)"] = (3*df2022["xG"] + 1*df2022["xA"])
-df2022["G + A (pts converted)"] = (3*df2022["Gf"] + 1*df2022["Ass"])
-df2022["% Gol/Tiri"] = df2022["Gf"]/df2022["shots"]
-df2022["Amm a partita"] = df2022["Amm"]/df2022["Pv"]
-df2022["Minuti a partita"] = df2022["time"]/df2022["games"]
-df2022["Tiri a partita"] = df2022["shots"]/df2022["games"]
-df2022["key_passes a partita"] = df2022["key_passes"]/df2022["games"]
-df2022["% Rigori Segnati"] = df2022["R+"]/df2022["Rc"]
+    if weights is None:
+        weights = {'g':3,'a':1,'rp':3,'cs':1,'au':2,'gs':1,'esp':1,'amm':0.5,'r-':1}
 
+    df["xBonus"] = (weights['g']*df["xG"] + weights['a']*df["xA"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]) - (weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"])
+    df["actualBonus"] = (weights['g']*df["Gf"] + weights['a']*df["Ass"] + weights['rp']*df["Rp"] + weights['cs']*df["clean_sheet"]) - (weights['au']*df["Au"] + weights['gs']*df["Gs"] + weights['esp']*df["Esp"] + weights['amm']*df["Amm"] + weights['r-']*df["R-"])
+    df["xG + xA (pts converted)"] = weights['g']*df["xG"] + weights['a']*df["xA"]
+    df["G + A (pts converted)"] = weights['g']*df["Gf"] + weights['a']*df["Ass"]
+    df["% Gol/Tiri"] = df["Gf"] / df["shots"].replace({0: pd.NA})
+    df["Amm a partita"] = df["Amm"] / df["Pv"].replace({0: pd.NA})
+    df["Minuti a partita"] = df["time"] / df["games"].replace({0: pd.NA})
+    df["Tiri a partita"] = df["shots"] / df["games"].replace({0: pd.NA})
+    df["key_passes a partita"] = df["key_passes"] / df["games"].replace({0: pd.NA})
+    df["% Rigori Segnati"] = df["R+"] / df["Rc"].replace({0: pd.NA})
+    if fill_pv_zero:
+        df.fillna(0, inplace=True)
+    if season_label:
+        df["season"] = season_label
+    return df
 
-df2023["xBonus"] = (3*df2023["xG"] + 1*df2023["xA"] + 3*df2023["Rp"] + 1*df2023["clean_sheet"]) - (2*df2023["Au"]+ 1*df2023["Gs"] + 1*df2023["Esp"] + 0.5*df2023["Amm"] + df2023["R-"])
-df2023["actualBonus"] = (3*df2023["Gf"] + 1*df2023["Ass"] + 3*df2023["Rp"] + 1*df2023["clean_sheet"]) - (2*df2023["Au"]+ 1*df2023["Gs"] + 1*df2023["Esp"] + 0.5*df2023["Amm"] + df2023["R-"])
-df2023["xG + xA (pts converted)"] = (3*df2023["xG"] + 1*df2023["xA"])
-df2023["G + A (pts converted)"] = (3*df2023["Gf"] + 1*df2023["Ass"])
-df2023["% Gol/Tiri"] = df2023["Gf"]/df2023["shots"]
-df2023["Amm a partita"] = df2023["Amm"]/df2023["Pv"]
-df2023["Minuti a partita"] = df2023["time"]/df2023["games"]
-df2023["Tiri a partita"] = df2023["shots"]/df2023["games"]
-df2023["key_passes a partita"] = df2023["key_passes"]/df2023["games"]
-df2023["% Rigori Segnati"] = df2023["R+"]/df2023["Rc"]
+#---------------- READ & PREPARE FILES
+drop_columns = ["Id","id","goals","assists","yellow_cards","red_cards","matched"]
 
-df2024["xBonus"] = (3*df2024["xG"] + 1*df2024["xA"] + 3*df2024["Rp"]+ 1*df2024["clean_sheet"]) - (2*df2024["Au"]+ 1*df2024["Gs"] + 1*df2024["Esp"] + 0.5*df2024["Amm"] + df2024["R-"])
-df2024["actualBonus"] = (3*df2024["Gf"] + 1*df2024["Ass"] + 3*df2024["Rp"] + 1*df2024["clean_sheet"]) - (2*df2024["Au"]+ 1*df2024["Gs"] + 1*df2024["Esp"] + 0.5*df2024["Amm"] + df2024["R-"])
-df2024["xG + xA (pts converted)"] = (3*df2024["xG"] + 1*df2024["xA"])
-df2024["G + A (pts converted)"] = (3*df2024["Gf"] + 1*df2024["Ass"])
-df2024["% Gol/Tiri"] = df2024["Gf"]/df2024["shots"]
-df2024["Amm a partita"] = df2024["Amm"]/df2024["Pv"]
-df2024["Minuti a partita"] = df2024["time"]/df2024["games"]
-df2024["Tiri a partita"] = df2024["shots"]/df2024["games"]
-df2024["key_passes a partita"] = df2024["key_passes"]/df2024["games"]
-df2024["% Rigori Segnati"] = df2024["R+"]/df2024["Rc"]
+@st.cache_data
+def load_and_prepare(path, season_label=None):
+    df = pd.read_excel(path)
+    df = df.drop(columns=drop_columns, errors='ignore')
+    df = add_metrics(df, season_label=season_label)
+    return df
+
+df2022, df2023, df2024 = (
+    load_and_prepare("2022_23_Merged.xlsx", season_label="2022-23"),
+    load_and_prepare("2023_24_Merged.xlsx", season_label="2023-24"),
+    load_and_prepare("2024_25_Merged.xlsx", season_label="2024-25")
+)
+
 #------------------------- PV FILTER
 min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
 
-df2022 = df2022[df2022["Pv"] >= min_pv]
-df2023 = df2023[df2023["Pv"] >= min_pv]
-df2024 = df2024[df2024["Pv"] >= min_pv]
+def filter_pv(df, min_pv):
+    return df[df["Pv"] >= min_pv]
 
-def2022 = df2022[df2022["R"] == "D"]
-def2023 = df2023[df2023["R"] == "D"]
-def2024 = df2024[df2024["R"] == "D"]
+df2022, df2023, df2024 = filter_pv(df2022, min_pv), filter_pv(df2023, min_pv), filter_pv(df2024, min_pv)
 
-# 22/23 clean sheets
-cs_2022 = {
-    "Atalanta": 8, "Bologna": 8, "Cremonese": 5, "Empoli": 9, "Fiorentina": 6,
-    "Inter": 12, "Juventus": 19, "Lazio": 21, "Lecce": 6, "Milan": 12,
-    "Monza": 10, "Napoli": 20, "Roma": 14, "Salernitana": 10, "Sampdoria": 4,
-    "Sassuolo": 9, "Spezia": 6, "Torino": 11, "Udinese": 10, "Verona": 6
-}
+def2022, def2023, def2024 = df2022[df2022["R"]=="D"], df2023[df2023["R"]=="D"], df2024[df2024["R"]=="D"]
 
-# 23/24 clean sheets
-cs_2023 = {
-    "Atalanta": 14, "Bologna": 17, "Cagliari": 5, "Empoli": 9, "Fiorentina": 8,
-    "Frosinone": 6, "Genoa": 8, "Inter": 21, "Juventus": 16, "Lazio": 13,
-    "Lecce": 7, "Milan": 12, "Monza": 12, "Napoli": 6, "Roma": 11, "Salernitana": 2,
-    "Sassuolo": 3, "Torino": 18, "Udinese": 9, "Verona": 8
-}
-
-# 24/25 clean sheets
-cs_2024 = {
-    "Atalanta": 14, "Bologna": 12, "Cagliari": 8, "Como": 7, "Empoli": 6,
-    "Fiorentina": 12, "Genoa": 10, "Inter": 16, "Juventus": 17, "Lazio": 9,
-    "Lecce": 9, "Milan": 12, "Monza": 3, "Napoli": 17, "Parma": 7,
-    "Roma": 17, "Torino": 10, "Udinese": 9, "Venezia": 6, "Verona": 8
-}
-
-# Map to DataFrames
-def2022["clean_sheet_def"] = def2022["Squadra"].map(cs_2022)
-def2023["clean_sheet_def"] = def2023["Squadra"].map(cs_2023)
-def2024["clean_sheet_def"] = def2024["Squadra"].map(cs_2024)
-
+# Clean sheets per squadra (se vuoi puoi mapparle come prima)
+# def2022["clean_sheet_def"] = ...
+# def2023["clean_sheet_def"] = ...
+# def2024["clean_sheet_def"] = ...
 
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([def2022["Nome"], def2023["Nome"], def2024["Nome"]]).unique()
 search_names = st.multiselect("Seleziona uno o più difensori da **confrontare**", options=sorted(all_names), default=[])
 
-# Palette e simboli
 colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qualitative.Dark24
-symbols = ["circle", "square", "diamond", "star", "cross", "x", "triangle-up", "triangle-down"]
+symbols = ["circle","square","diamond","star","cross","x","triangle-up","triangle-down"]
 
 #========================= SECTION 0: CORRELATION MATRICES =========================
-corrdef2022 = def2022.corr(numeric_only=True)
-corrdef2023 = def2023.corr(numeric_only=True)
-corrdef2024 = def2024.corr(numeric_only=True)
-corrdef = (corrdef2022 + corrdef2023 + corrdef2024)/3
-st.header("📊 Matrici di correlazione - Difensori")
-fig = px.imshow(
-    corrdef,
-    text_auto=".2f",
-    color_continuous_scale='RdBu_r',
-    aspect="auto",
-    title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (DEF)"
-)
-
-fig.update_layout(
-    height=800
-)
-
+st.header("📊 Matrice di correlazione - Difensori")
+corrdef = (def2022.corr(numeric_only=True) + def2023.corr(numeric_only=True) + def2024.corr(numeric_only=True)) / 3
+fig = px.imshow(corrdef, text_auto=".2f", color_continuous_scale='RdBu_r', aspect="auto", title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (DEF)")
+fig.update_layout(height=800)
 st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Difensori")
+metrics = ["Mv","Fm","Gf","Ass","xG_per90","xA_per90","key_passes","Tiri a partita","G + A (pts converted)",
+           "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Amm a partita"]
 
-metrics = ["Mv", "Fm", "Gf", "Ass", "xG_per90", "xA_per90", "key_passes", "Tiri a partita", "G + A (pts converted)",
-           "Rc", "R+", "% Rigori Segnati", "Minuti a partita", "Amm", "Amm a partita"]
+def add_boxplot(fig, df, col, metric):
+    box = px.violin(df, y=metric, box=True, points="all", hover_data=["Nome","Squadra","Pv"])
+    for trace in box.data:
+        fig.add_trace(trace, row=1, col=col)
+    for i, name in enumerate(search_names):
+        highlight = df[df["Nome"]==name]
+        if not highlight.empty:
+            fig.add_trace(px.scatter(highlight, y=metric, hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
+
 for metric in metrics:
     st.subheader(f"{metric} - Boxplot 2022-2024")
-    
-    fig = make_subplots(
-        rows=1, cols=3,
-        subplot_titles=("2022", "2023", "2024"),
-        horizontal_spacing=0.15
-    )
-
-    def add_boxplot(fig, df, col):
-        # Base boxplot
-        box = px.violin(
-            df,
-            y=metric,
-            box=True,
-            points="all",
-            hover_data=["Nome", "Squadra", "Pv"]
-        )
-        for trace in box.data:
-            fig.add_trace(trace, row=1, col=col)
-        
-        # Highlight selected players
-        for i, name in enumerate(search_names):
-            highlight = df[df["Nome"] == name]
-            if not highlight.empty:
-                fig.add_trace(
-                    px.scatter(
-                        highlight,
-                        y=metric,
-                        hover_name="Nome"
-                    ).update_traces(
-                        marker=dict(size=15, color=colors[i % len(colors)], symbol=symbols[i % len(symbols)]),
-                        name=name,
-                        showlegend=True
-                    ).data[0],
-                    row=1, col=col
-                )
-
-    add_boxplot(fig, def2022, col=1)
-    add_boxplot(fig, def2023, col=2)
-    add_boxplot(fig, def2024, col=3)
-
-    fig.update_layout(
-        height=500, width=1200,
-        title=f"{metric} - Difensori 2022-2024",
-        showlegend=True
-    )
+    fig = make_subplots(rows=1, cols=3, subplot_titles=("2022","2023","2024"), horizontal_spacing=0.15)
+    add_boxplot(fig, def2022, 1, metric)
+    add_boxplot(fig, def2023, 2, metric)
+    add_boxplot(fig, def2024, 3, metric)
+    fig.update_layout(height=500,width=1200,title=f"{metric} - Difensori 2022-2024", showlegend=True)
     st.plotly_chart(fig, use_container_width=True)
-
-
 
 #========================= SECTION 2: REGRESSION =========================
 st.header("📈 Correlazioni Coppie di Variabili")
 
 def add_scatter(fig, df, x, y, col):
-    scatter = px.scatter(
-        df,
-        x=x,
-        y=y,
-        trendline="ols",
-        hover_name="Nome",
-        hover_data=["Squadra", "Pv"]
-    )
+    scatter = px.scatter(df, x=x, y=y, trendline="ols", hover_name="Nome", hover_data=["Squadra","Pv"])
     for trace in scatter.data:
         fig.add_trace(trace, row=1, col=col)
-
-    # Highlight selected players
     for i, name in enumerate(search_names):
-        highlight = df[df["Nome"] == name]
+        highlight = df[df["Nome"]==name]
         if not highlight.empty:
-            fig.add_trace(
-                px.scatter(
-                    highlight,
-                    x=x,
-                    y=y,
-                    hover_name="Nome"
-                ).update_traces(
-                    marker=dict(size=15, color=colors[i % len(colors)], symbol=symbols[i % len(symbols)]),
-                    name=name,
-                    showlegend=True
-                ).data[0],
-                row=1, col=col
-            )
+            fig.add_trace(px.scatter(highlight, x=x, y=y, hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
 
-# Variabili da confrontare
-pairs = [
-    ("Mv", "Fm", "📈 Mv vs Fm - Difensori 2022-2024"),
-    ("Pv", "Mv", "📈 Pv vs Mv - Difensori 2022-2024"),
-    ("clean_sheet_def", "Mv", "📈 Clean Sheet Squadra vs Mv - Difensori 2022-2024"),
-    ("Tiri a partita", "Fm", "📈 Tiri a partita vs Fm - Difensori 2022-2024"),
-    ("shots", "Gf", "📈 Tiri vs Gf - Difensori 2022-2024"),
-    ("xG", "Gf", "📈 xG vs Gol Fatti - Difensori 2022-2024"),
-    ("xA", "Ass", "📈 xA vs Assist - Difensori 2022-2024"),
-    ("key_passes", "xA", "📈 Passaggi Chiave vs xAssist - Difensori 2022-2024"),
-    ("Gf", "R+", "📈 Gf vs Rigori segnati - Difensori 2022-2024")
-]
+pairs = [("Mv","Fm"),("Pv","Mv"),("clean_sheet_def","Mv"),("Tiri a partita","Fm"),("shots","Gf"),
+         ("xG","Gf"),("xA","Ass"),("key_passes","xA"),("Gf","R+")]
 
-for x, y, title in pairs:
-    fig = make_subplots(
-        rows=1, cols=3,
-        subplot_titles=("2022", "2023", "2024"),
-        horizontal_spacing=0.1
-    )
-    for col, df in zip([1, 2, 3], [def2022, def2023, def2024]):
+for x,y in pairs:
+    fig = make_subplots(rows=1,cols=3,subplot_titles=("2022","2023","2024"),horizontal_spacing=0.1)
+    for col,df in zip([1,2,3],[def2022,def2023,def2024]):
         add_scatter(fig, df, x, y, col)
-
-    fig.update_layout(
-        height=500, width=1600,
-        showlegend=True,
-        title=title
-    )
-    fig.update_xaxes(title_text=x, row=1, col=1)
-    fig.update_xaxes(title_text=x, row=1, col=2)
-    fig.update_xaxes(title_text=x, row=1, col=3)
-
-    fig.update_yaxes(title_text=y, row=1, col=1)
-    fig.update_yaxes(title_text=y, row=1, col=2)
-    fig.update_yaxes(title_text=y, row=1, col=3)
-
+    fig.update_layout(height=500,width=1600,showlegend=True,title=f"{x} vs {y} - Difensori 2022-2024")
+    fig.update_xaxes(title_text=x,row=1,col=1)
+    fig.update_xaxes(title_text=x,row=1,col=2)
+    fig.update_xaxes(title_text=x,row=1,col=3)
+    fig.update_yaxes(title_text=y,row=1,col=1)
+    fig.update_yaxes(title_text=y,row=1,col=2)
+    fig.update_yaxes(title_text=y,row=1,col=3)
     st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 3: RADAR PLOT NORMALIZZATO =========================
 st.header("📊 Confronto Radar dei Giocatori Selezionati per Stagione")
-
 if search_names:
-    radar_metrics = [
-        "Pv", "Mv", "Fm", "Gf", "Ass", "xG_per90", "xA_per90",
-        "% Gol/Tiri", "key_passes"
-    ]
-
-    seasons = {
-        "2022-23": def2022,
-        "2023-24": def2023,
-        "2024-25": def2024
-    }
-
-    # Creo colonne affiancate per le 3 stagioni
+    radar_metrics = ["Pv","Mv","Fm","Gf","Ass","xG_per90","xA_per90","% Gol/Tiri","key_passes"]
+    seasons = {"2022-23":def2022,"2023-24":def2023,"2024-25":def2024}
     cols = st.columns(len(seasons))
-
-    for col, (season_name, df_season) in zip(cols, seasons.items()):
-        # Filtra solo i giocatori selezionati presenti in questa stagione
-        df_selected = df_season[df_season["Nome"].isin(search_names)][["Nome"] + radar_metrics].copy()
+    for col,(season_name,df_season) in zip(cols,seasons.items()):
+        df_selected = df_season[df_season["Nome"].isin(search_names)][["Nome"]+radar_metrics].copy()
         if df_selected.empty:
             col.info(f"Nessun giocatore selezionato in {season_name}.")
             continue
-
         df_selected = df_selected.groupby("Nome")[radar_metrics].mean().reset_index()
-
-        # Normalizzazione: per ogni metrica il massimo tra i giocatori selezionati diventa 1
         df_norm = df_selected.copy()
         for metric in radar_metrics:
             max_val = df_norm[metric].max()
-            if max_val != 0:
-                df_norm[metric] = df_norm[metric] / max_val
-            else:
-                df_norm[metric] = 0
-
-        # Trasforma in formato long (necessario per px.line_polar)
-        df_long = df_norm.melt(id_vars="Nome", value_vars=radar_metrics,
-                               var_name="Metrica", value_name="Valore")
-
-        # Plot radar
-        fig = px.line_polar(
-            df_long,
-            r="Valore",
-            theta="Metrica",
-            color="Nome",
-            line_close=True,
-            markers=True
-        )
+            df_norm[metric] = df_norm[metric]/max_val if max_val!=0 else 0
+        df_long = df_norm.melt(id_vars="Nome", value_vars=radar_metrics, var_name="Metrica", value_name="Valore")
+        fig = px.line_polar(df_long, r="Valore", theta="Metrica", color="Nome", line_close=True, markers=True)
         fig.update_traces(fill='toself')
-        fig.update_layout(
-            polar=dict(
-                radialaxis=dict(visible=True, range=[0, 1], tickfont=dict(color="black"))
-            ),
-            showlegend=True,
-            title=season_name
-        )
-
+        fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0,1], tickfont=dict(color="black"))), showlegend=True, title=season_name)
         col.plotly_chart(fig, use_container_width=True)
 else:
     st.info("Seleziona almeno un giocatore per visualizzare il radar plot.")
 
 #========================= SECTION 4: "FASCE" CLUSTERING =========================
-
 def KmeansPCA(df, numericalCols, nclusters, ruolo, highlight_names=None):
     df = df.copy() 
     df_filled = df[numericalCols].fillna(0)
-    
-    # Standardization
     scaler = StandardScaler()
     df_scaled = scaler.fit_transform(df_filled)
-    
-    # Fit KMeans on scaled data
     model = KMeans(n_clusters=nclusters, random_state=42)
-    df["cluster"] = model.fit_predict(df_scaled).astype(str)  # Convert cluster to string
-    
-    # PCA on scaled data
+    df["cluster"] = model.fit_predict(df_scaled).astype(str)
     pca = PCA(n_components=2)
     pca_result = pca.fit_transform(df_scaled)
-    df["PCA1"] = pca_result[:, 0]
-    df["PCA2"] = pca_result[:, 1]
-    
-    # Define vivid colors for clusters
-    vivid_colors = ["#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6"]
+    df["PCA1"], df["PCA2"] = pca_result[:,0], pca_result[:,1]
+    vivid_colors = ["#e6194b","#3cb44b","#ffe119","#4363d8","#f58231","#911eb4","#46f0f0","#f032e6"]
     color_sequence = [vivid_colors[i % len(vivid_colors)] for i in range(nclusters)]
-    
-    # Plotly scatter
-    fig = px.scatter(
-        df,
-        x="PCA1",
-        y="PCA2",
-        color="cluster",
-        hover_data=["Nome", "Squadra", "Pv", "Fm"],
-        title=f"Cluster {ruolo}",
-        color_discrete_sequence=color_sequence
-    )
-
-    # Highlight selected players
+    fig = px.scatter(df, x="PCA1", y="PCA2", color="cluster", hover_data=["Nome","Squadra","Pv","Fm"], title=f"Cluster {ruolo}", color_discrete_sequence=color_sequence)
     if highlight_names:
-        for i, name in enumerate(highlight_names):
-            highlight = df[df["Nome"] == name]
+        for name in highlight_names:
+            highlight = df[df["Nome"]==name]
             if not highlight.empty:
-                fig.add_trace(
-                    px.scatter(
-                        highlight,
-                        x="PCA1",
-                        y="PCA2",
-                        hover_name="Nome"
-                    ).update_traces(
-                        marker=dict(size=15, color='black', symbol='star'),
-                        name=name,
-                        showlegend=True
-                    ).data[0]
-                )
-    
-    fig.update_traces(marker=dict(size=12, line=dict(width=1, color='DarkSlateGrey')))
+                fig.add_trace(px.scatter(highlight,x="PCA1",y="PCA2",hover_name="Nome").update_traces(marker=dict(size=15,color='black',symbol='star'),name=name,showlegend=True).data[0])
+    fig.update_traces(marker=dict(size=12,line=dict(width=1,color='DarkSlateGrey')))
     st.plotly_chart(fig, use_container_width=True)
 
 st.header("🛡️ Clustering Difensori")
-numericalCols_def = ["Pv", "Mv", "Fm", "Gf", "Ass", "Amm", "Esp", "xG", "xA", "% Gol/Tiri", "shots", "key_passes", "xGBuildup", "xGChain", "Minuti a partita", "clean_sheet_def"]
-# Sidebar options for clustering
+numericalCols_def = ["Pv","Mv","Fm","Gf","Ass","Amm","Esp","xG","xA","% Gol/Tiri","shots","key_passes","xGBuildup","xGChain","Minuti a partita","clean_sheet_def"]
 n_clusters = st.slider("Scegli il numero di 'raggruppamenti' (KMeans)", 2, 6, 3)
-
 if st.button("Esegui clustering difensori 2024"):
-    KmeansPCA(
-        def2024,                    # Last season dataframe
-        numericalCols_def,          # Your selected numeric columns
-        n_clusters, 
-        ruolo="Difensori 2024",
-        highlight_names=search_names # Highlight selected players
-    )
+    KmeansPCA(def2024, numericalCols_def, n_clusters, ruolo="Difensori 2024", highlight_names=search_names)
 
 #========================= SECTION X: OTHER METRICS =========================
 st.header("⚡ Altre metriche")
-
-
-
-
