@@ -12,7 +12,7 @@ st.title("📐 Centrocampisti - Analisi Statistica")
 st.markdown("""
 In questa sezione analizziamo le performance dei centrocampisti nelle ultime 3 stagioni di Serie A.
 
-Simboli principali:
+Utilizzeremo i seguenti simboli:
 - Mv = Media Voto
 - Fm = Fanta Media
 - Pv = Partite a Voto
@@ -32,28 +32,23 @@ Simboli principali:
 def add_metrics(df, season_label=None):
     df = df.copy()
     
-    # Bonus
     df["xBonus"] = (3*df["xG"] + 1*df["xA"] + 3*df["Rp"] + 1*df["clean_sheet"]) - \
                    (2*df["Au"] + 1*df["Gs"] + 1*df["Esp"] + 0.5*df["Amm"] + 3*df["R-"])
     df["actualBonus"] = (3*df["Gf"] + 1*df["Ass"] + 3*df["Rp"] + 1*df["clean_sheet"]) - \
                         (2*df["Au"] + 1*df["Gs"] + 1*df["Esp"] + 0.5*df["Amm"] + 3*df["R-"])
     
-    # Goal & assist
     df["xG + xA (pts converted)"] = 3*df["xG"] + 1*df["xA"]
     df["G + A (pts converted)"] = 3*df["Gf"] + 1*df["Ass"]
     
-    # %
     df["% Gol/Tiri"] = df["Gf"] / df["shots"]
     df["% Rigori Segnati"] = df["R+"] / df["Rc"]
     
-    # stats_per90
     df["Amm a partita"] = df["Amm"] / df["Pv"]
     df["Minuti a partita"] = df["time"] / df["games"]
     df["Tiri a partita"] = df["shots"] / df["games"]
     df["key_passes a partita"] = df["key_passes"] / df["games"]
     df["Gf a partita"] = df["Gf"] / df["Pv"]
     
-    # Season label
     if season_label is not None:
         df["season"] = season_label
     
@@ -66,7 +61,7 @@ drop_columns = ["Id","id","goals","assists","yellow_cards","red_cards","matched"
 def load_and_prepare(path, season_label=None):
     df = pd.read_excel(path)
     df = df.drop(columns=drop_columns, errors='ignore')
-    df = add_metrics(df, season_label=season_label)
+    df = add_metrics(df, season_label)
     return df
 
 df2022, df2023, df2024 = (
@@ -75,16 +70,13 @@ df2022, df2023, df2024 = (
     load_and_prepare("2024_25_Merged.xlsx", season_label="2024-25")
 )
 
-#------------------------- PV FILTER
+#---------------- PV FILTER
 min_pv = st.slider("Numero minimo di partite a voto (Pv)", min_value=1, max_value=int(df2024["Pv"].max()), value=1)
+df2022, df2023, df2024 = df2022[df2022["Pv"]>=min_pv], df2023[df2023["Pv"]>=min_pv], df2024[df2024["Pv"]>=min_pv]
 
-def filter_pv(df, min_pv):
-    return df[df["Pv"] >= min_pv]
-
-df2022, df2023, df2024 = filter_pv(df2022, min_pv), filter_pv(df2023, min_pv), filter_pv(df2024, min_pv)
 mid2022, mid2023, mid2024 = df2022[df2022["R"]=="C"], df2023[df2023["R"]=="C"], df2024[df2024["R"]=="C"]
 
-#------------------------- MULTI SEARCH BOX
+#---------------- MULTI SEARCH BOX
 all_names = pd.concat([mid2022["Nome"], mid2023["Nome"], mid2024["Nome"]]).unique()
 search_names = st.multiselect("Seleziona uno o più centrocampisti da **confrontare**", options=sorted(all_names), default=[])
 
@@ -93,8 +85,8 @@ symbols = ["circle","square","diamond","star","cross","x","triangle-up","triangl
 
 #========================= SECTION 0: CORRELATION MATRICES =========================
 st.header("📊 Matrice di correlazione - Centrocampisti")
-corrmid = (mid2022.corr(numeric_only=True) + mid2023.corr(numeric_only=True) + mid2024.corr(numeric_only=True)) / 3
-fig = px.imshow(corrmid, text_auto=".2f", color_continuous_scale='RdBu_r', aspect="auto", title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (CEN)")
+corr_mid = (mid2022.corr(numeric_only=True) + mid2023.corr(numeric_only=True) + mid2024.corr(numeric_only=True)) / 3
+fig = px.imshow(corr_mid, text_auto=".2f", color_continuous_scale='RdBu_r', aspect="auto", title="MATRICE DI CORRELAZIONI MEDIA 2022-24 (CEN)")
 fig.update_layout(height=800)
 st.plotly_chart(fig, use_container_width=True)
 
@@ -123,7 +115,6 @@ for metric in metrics:
 
 #========================= SECTION 2: REGRESSION =========================
 st.header("📈 Correlazioni Coppie di Variabili")
-
 def add_scatter(fig, df, x, y, col):
     scatter = px.scatter(df, x=x, y=y, trendline="ols", hover_name="Nome", hover_data=["Squadra","Pv"])
     for trace in scatter.data:
@@ -131,7 +122,7 @@ def add_scatter(fig, df, x, y, col):
     for i, name in enumerate(search_names):
         highlight = df[df["Nome"]==name]
         if not highlight.empty:
-            fig.add_trace(px.scatter(highlight, x=x, y=y, hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
+            fig.add_trace(px.scatter(highlight,x=x,y=y,hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
 
 pairs = [("Mv","Fm"),("shots","Gf"),("Tiri a partita","Fm"),("Gf","Ass"),("xG","Gf"),("xA","Ass"),("key_passes","Ass"),("Tiri a partita","Gf a partita"),("Gf","R+")]
 
@@ -141,12 +132,4 @@ for x,y in pairs:
         add_scatter(fig, df, x, y, col)
     fig.update_layout(height=500,width=1600,showlegend=True,title=f"{x} vs {y} - Centrocampisti 2022-2024")
     fig.update_xaxes(title_text=x,row=1,col=1)
-    fig.update_xaxes(title_text=x,row=1,col=2)
-    fig.update_xaxes(title_text=x,row=1,col=3)
-    fig.update_yaxes(title_text=y,row=1,col=1)
-    fig.update_yaxes(title_text=y,row=1,col=2)
-    fig.update_yaxes(title_text=y,row=1,col=3)
-    st.plotly_chart(fig, use_container_width=True)
-
-#========================= SECTION 3: RADAR PLOT NORMALIZZATO =========================
-st.header("📊 Confronto
+    fig.update_xaxes(title_text=x,row=1,col=
