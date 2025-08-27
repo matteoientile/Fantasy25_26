@@ -9,6 +9,9 @@ st.markdown("""
 Qui troverai 
 - il Listone Fantagazzetta per l'asta 25/26
 - i Link ai migliori siti per le Probabili Formazioni di Serie A
+
+Nel listone, sono riportate una serie di statistiche relative all'anno scorso. A parte le più ovvie, può essere particolarmente utile
+- Over/Under performance [%] = se positivo, vuol dire che il giocatore ha prodotto più bonus rispetto a quelli attesi; se negativo, il giocatore ha underperformato
 """)
 
 #========================= SIDEBAR: INDEX =========================
