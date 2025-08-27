@@ -61,7 +61,7 @@ gk2024 = df2024[df2024["R"] == "P"]
 
 #------------------------- MULTI SEARCH BOX
 all_names = pd.concat([gk2022["Nome"], gk2023["Nome"], gk2024["Nome"]]).unique()
-search_names = st.multiselect("Seleziona uno o più portieri da evidenziare", options=sorted(all_names), default=[])
+search_names = st.multiselect("Seleziona uno o più portieri da **confrontare**", options=sorted(all_names), default=[])
 
 # Palette e simboli
 colors = px.colors.qualitative.Set1 + px.colors.qualitative.Set2 + px.colors.qualitative.Dark24
