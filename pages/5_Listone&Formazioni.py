@@ -535,6 +535,19 @@ else:
 #========================= MOSTRA TABELLA =========================
 st.dataframe(df_listone.reset_index(drop=True), use_container_width=True)
 
+#========================= DOWNLOAD IN EXCEL =========================
+import io
+buffer = io.BytesIO()
+with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+    df_listone.to_excel(writer, index=False, sheet_name="Listone")
+
+st.download_button(
+    label="📥 Scarica tabella in Excel",
+    data=buffer,
+    file_name="listone.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
+
 #========================= SECTION 2: FORMAZIONI TIPO =========================
 st.header("⚽ Formazioni Tipo Serie A 2025/26")
 
