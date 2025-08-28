@@ -356,6 +356,12 @@ titolari_att = {"De Ketelaere" : "Ballottaggio Samardzic",
                 "Giovane" : "Tit",
                 "Sarr A." : "Ballottaggio Orban",
                 "Orban" : "Ballottaggio Sarr A."}
+#======== MERGE TITOLARI
+titolari_all = {}
+titolari_all.update(titolari_por)
+titolari_all.update(titolari_dif)
+titolari_all.update(titolari_cen)
+titolari_all.update(titolari_att)
 
 #======== CALCI PIAZZATI
 piazzati = {"Krstovic":"R1-2",
@@ -460,10 +466,7 @@ df_listone = df_listone.merge(df_stats, on="Nome", how="left")
 
 # Colonna "Nuovo Arrivo" + "Titolarità"
 df_listone["Nuovo Arrivo"] = np.where(~df_listone["Nome"].isin(df_stats["Nome"]), "SI", "-")
-df_listone["Titolarità"] = df_listone["Nome"].map(titolari_por)
-df_listone["Titolarità"] = df_listone["Nome"].map(titolari_dif)
-df_listone["Titolarità"] = df_listone["Nome"].map(titolari_cen)
-df_listone["Titolarità"] = df_listone["Nome"].map(titolari_att)
+df_listone["Titolarità"] = df_listone["Nome"].map(titolari_all)
 df_listone["Piazzati"] = df_listone["Nome"].map(piazzati)
 
 # Sostituisci NaN con "-" solo nelle colonne statistiche
