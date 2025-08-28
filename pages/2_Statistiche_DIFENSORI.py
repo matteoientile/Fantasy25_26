@@ -61,7 +61,6 @@ def add_metrics(df, season_label=None):
     
     # stats_per90
     df["Amm a partita"] = df["Amm"] / df["Pv"].replace({0: np.nan})
-    df["Minuti a partita"] = df["time"] / df["Pv"]
     
     # Season label
     if season_label:
@@ -149,7 +148,7 @@ st.plotly_chart(fig, use_container_width=True)
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Difensori")
 metrics = ["Mv","Fm","Gf","Ass", "Efficienza realizzativa (Gol)", "Efficienza realizzativa (Assist)","xG_per90","xA_per90", "key_passes","G + A (pts converted)",
-           "Rc","R+","Minuti a partita","Amm","Amm a partita"]
+           "Rc","R+","Amm","Amm a partita"]
 
 def add_boxplot(fig, df, col, metric):
     box = px.violin(df, y=metric, box=True, points="all", hover_data=["Nome","Squadra","Pv"])
