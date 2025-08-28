@@ -14,7 +14,7 @@ Tantissime statistice (Calcistiche e Fantacalcistiche) delle **ultime 3 stagioni
 - 📐 **Centrocampisti** 
 - 🎯 **Attaccanti**
 
-ma soprattutto il **Listone** (File Excel scaricabile) con una serie di infromazioni indispensabili a portata di mano!
+ma soprattutto il **LISTONE** (File Excel scaricabile) con una serie di infromazioni indispensabili a portata di mano!
 
 **❓ Non capisci nulla di statistica ❓** ➡️ Nessun problema! Ecco come leggere i grafici: """)
 
