@@ -177,7 +177,7 @@ def add_scatter(fig, df, x, y, col):
         if not highlight.empty:
             fig.add_trace(px.scatter(highlight, x=x, y=y, hover_name="Nome").update_traces(marker=dict(size=15,color=colors[i % len(colors)],symbol=symbols[i % len(symbols)]), name=name, showlegend=True).data[0], row=1, col=col)
 
-pairs = [("Mv","Fm"),("Pv","Mv"),("clean_sheet_def","Mv"),("Tiri a partita","Fm"),("shots","Gf"),
+pairs = [("Mv","Fm"),("Pv","Mv"),("clean_sheet_def","Mv"),("shots","Fm"),("shots","Gf"),
          ("xG","Gf"),("xA","Ass"),("key_passes","xA"),("Gf","R+")]
 
 for x,y in pairs:
