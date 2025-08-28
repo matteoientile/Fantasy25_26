@@ -357,7 +357,7 @@ titolari_att = {"De Ketelaere" : "Ballottaggio Samardzic",
                 "Davis K." : "Ballottaggio Buksa",
                 "Giovane" : "Tit",
                 "Sarr A." : "Ballottaggio Orban",
-                "Orban" : "Ballottaggio Sarr A."}
+                "Orban G." : "Ballottaggio Sarr A."}
 #======== MERGE TITOLARI
 titolari_all = {}
 titolari_all.update(titolari_por)
