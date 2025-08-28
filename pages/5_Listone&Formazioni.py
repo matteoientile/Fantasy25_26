@@ -198,7 +198,6 @@ titolari_dif = {"Scalvini" : "Ballottagio Kossounou",
 titolari_cen = {"Ederson" : "Tit",
                 "De Roon" : "Tit",
                 "Zalewski" : "Ballottaggio Zappacosta",
-                "De Ketelaere" : "Ballottaggio Samardzic",
                 "Samardzic" : "Ballottaggio De Ketelaere",
                 "Maldini" : "Ballottaggio Sulemana",
                 "Sulemana" : "Ballottaggio Maldini",
@@ -247,6 +246,7 @@ titolari_cen = {"Ederson" : "Tit",
                 "Dele-Bashiru" : "Ballottaggio Vecino",
                 "Zaccagni" : "Tit",
                 "Coulibaly" : "Tit",
+                "Isaksen" : "Ballottaggio Cancellieri/Pedro",
                 "Pierret" : "Ballottaggio Ramadani",
                 "Ramadani" : "Ballottaggio Pierret",
                 "Sala" : "Ballottaggio Helgason",
@@ -269,6 +269,7 @@ titolari_cen = {"Ederson" : "Tit",
                 "Sorensen O." : "Ballottaggio Ordonez C.",
                 "Ordonez C." : "Ballottaggio Sorensen O.",
                 "Bernabè" : "Tit",
+                "Oristanio" : "Tit",
                 "Keita M." : "Tit",
                 "Tourè I." : "Tit",
                 "Marin M." : "Ballottaggio Piccinini",
@@ -297,7 +298,62 @@ titolari_cen = {"Ederson" : "Tit",
                 "Serdar" : "Tit",
                 "Bernede" : "Tit"}
 
-
+titolari_att = {"De Ketelaere" : "Ballottaggio Samardzic",
+                "Krstovic" : "Ballottaggio Scamacca",
+                "Scamacca" : "Ballottaggio Krstovic",
+                "Cambiaghi" : "Ballottaggio Rowe",
+                "Castro S." : "Ballottaggio Immobile",
+                "Immobile" : "Ballottaggio Castro S.",
+                "Esposito Se." : "Tit",
+                "Kilicsoy" : "Ballottaggio Gaetano",
+                "Luvumbo" : "Tit",
+                "Addai" : "Ballottaggio Khun",
+                "Khun" : "Ballottaggio Addai",
+                "Diao" : "Ballottaggio Rodriguez Je.",
+                "Rodriguez Je." : "Ballottaggio Diao",
+                "Morata" : "Ballottaggio Douvikas",
+                "Douvikas" : "Ballottaggio Morata",
+                "Sanabria" : "Tit",
+                "Bonazzoli" : "Vazquez",
+                "Kean" : "Tit",
+                "Dzeko" : "Ballottaggio Piccoli",
+                "Piccoli" : "Ballottaggio Dzeko",
+                "Colombo" : "Ballottaggio Vitinha O.",
+                "Vitinha O." : "Ballottaggio Colombo",
+                "Thuram" : "Tit",
+                "Lautaro" : "Tit",
+                "Yildiz" : "Tit",
+                "David" : "Tit (occhio Kolo)",
+                "Catellanos" : "Ballottaggio Dia",
+                "Dia" : "Ballottaggio Castellanos",
+                "Cancellieri" : "Ballottaggio Isaksen",
+                "Pedro" : "Ballottaggio Cancellieri/Isaksen",
+                "Banda" : "Ballottaggio Morente/Sottil",
+                "Stulic" : "Ballottaggio Camarda",
+                "Camarda" : "Ballottaggio Stulic",
+                "Gimenez" : "(???)",
+                "Leao" : "Tit",
+                "Lang" : "Ballottaggio Politano/Neres",
+                "Lucca" : "Ballottaggio Lukaku",
+                "Lukaku" : "Ballottaggio Lucca",
+                "Pellegrino M." : "Tit",
+                "Nzola" : "Tit",
+                "Ferguson" : "Ballottaggio Dovbyk/X",
+                "Dovbyk" : "Ballottaggio Ferguson/X",
+                "Dybala" : "Ballottaggio Bailey",
+                "Soulè" : "Tit",
+                "Berardi" : "Tit",
+                "Pinamonti" : "Tit",
+                "Laurentiè" : "Tit",
+                "Ngonge" : "Ballottaggio Vlasic",
+                "Simeone" : "Tit",
+                "Zapata D." : "Ballottaggio Adams C.",
+                "Bravo" : "Ballottaggio Ekkelenkamp",
+                "Buksa" : "Ballottaggio Davis K.",
+                "Davis K." : "Ballottaggio Buksa",
+                "Giovane" : "Tit",
+                "Sarr A." : "Ballottaggio Orban",
+                "Orban" : "Ballottaggio Sarr A."}
 # Seleziona solo le colonne utili dalle stats
 cols_stats = [
     "Nome", "Mv", "Fm", "Pv", "Gf", "Ass", "Gs", "clean_sheet", "Amm", "Esp", "Rc", "Over/Under performance %"
@@ -321,11 +377,14 @@ df_stats = df_stats.rename(columns={
 
 # Merge sul nome
 df_listone = df_listone.merge(df_stats, on="Nome", how="left")
+
 # Colonna "Nuovo Arrivo" + "Titolarità"
 df_listone["Nuovo Arrivo"] = np.where(~df_listone["Nome"].isin(df_stats["Nome"]), "SI", "-")
 df_listone["Titolarità"] = df_listone["Nome"].map(titolari_por)
 df_listone["Titolarità"] = df_listone["Nome"].map(titolari_dif)
 df_listone["Titolarità"] = df_listone["Nome"].map(titolari_cen)
+df_listone["Titolarità"] = df_listone["Nome"].map(titolari_att)
+
 # Sostituisci NaN con "-" solo nelle colonne statistiche
 stat_cols = [c for c in df_stats.columns if c != "Nome"]
 df_listone[stat_cols] = df_listone[stat_cols].fillna("-")
