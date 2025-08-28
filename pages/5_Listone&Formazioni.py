@@ -48,6 +48,30 @@ df_stats["Over/Under performance %"] = np.where(
 )
 df_stats["Over/Under performance %"] = df_stats["Over/Under performance %"].fillna("-")
 
+#TITOLARITA'
+titolari_por = {"Carnesecchi" : "Tit",
+                "Skorupski" : "Tit", 
+                "Caprile" : "Tit",
+                "Butez" : "Tit",
+                "Audero" : "Tit",
+                "De Gea" : "Tit",
+                "Leali" : "Tit",
+                "Sommer" : "Tit",
+                "Di Gregorio" : "Tit",
+                "Provedel" : "Tit",
+                "Falcone" : "Tit",
+                "Maignan" : "Tit",
+                "Meret" : "Ballottaggio Milinkovic",
+                "Milinkovic-S" : "Ballottaggio Meret",
+                "Semper" : "Ballottaggio Scuffet",
+                "Scuffet" : "Ballottaggio Semper",
+                "Svilar" : "Tit",
+                "Turati" : "Tit",
+                "Israel" : "Tit",
+                "Okoye" : "Ballottaggio Okoye",
+                "Sava" : "Ballottaggio Sava",
+                "Montipò" : "Tit"}
+
 # Seleziona solo le colonne utili dalle stats
 cols_stats = [
     "Nome", "Mv", "Fm", "Pv", "Gf", "Ass", "Gs", "clean_sheet", "Amm", "Esp", "Rc", "Over/Under performance %"
@@ -71,8 +95,9 @@ df_stats = df_stats.rename(columns={
 
 # Merge sul nome
 df_listone = df_listone.merge(df_stats, on="Nome", how="left")
-# Colonna "Nuovo Arrivo": SI se il giocatore non è presente in df_stats
+# Colonna "Nuovo Arrivo" + "Titolarità"
 df_listone["Nuovo Arrivo"] = np.where(~df_listone["Nome"].isin(df_stats["Nome"]), "SI", "-")
+df_listone["Titolarità"] = df_listone["Nome"].map(titolari_por)
 
 # Sostituisci NaN con "-" solo nelle colonne statistiche
 stat_cols = [c for c in df_stats.columns if c != "Nome"]
