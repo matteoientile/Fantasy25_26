@@ -8,13 +8,12 @@ st.markdown(""" È il momento di **svoltare** la tua asta!
 Smettila di scorrere listoni interminabili, consumare decine di video pieni di bias ed opinioni personali: **qui parlano i numeri**.
 
 ### 🔎 Cosa troverai:
-Tantissime statistice (Calcistiche e Fantacalcistiche) su 
+Tantissime statistice (Calcistiche e Fantacalcistiche) delle **ultime 3 stagioni di Serie A** su 
 - 🧤 **Portieri** 
 - 🛡️ **Difensori** 
 - 📐 **Centrocampisti** 
 - 🎯 **Attaccanti**
-
-delle **ultime 3 stagioni di Serie A**.
+ma sopratutti il **Listone** (File Excel scaricabile) con una serie di infromazioni indispensabili a portata di mano!
 
 **❓ Non capisci nulla di statistica ❓** ➡️ Nessun problema! Ecco come leggere i grafici: """)
 
