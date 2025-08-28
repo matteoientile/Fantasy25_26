@@ -298,6 +298,7 @@ titolari_cen = {"Ederson" : "Tit",
                 "Serdar" : "Tit",
                 "Bernede" : "Tit"}
 
+#======== ATTACCANTI  
 titolari_att = {"De Ketelaere" : "Ballottaggio Samardzic",
                 "Krstovic" : "Ballottaggio Scamacca",
                 "Scamacca" : "Ballottaggio Krstovic",
@@ -356,6 +357,7 @@ titolari_att = {"De Ketelaere" : "Ballottaggio Samardzic",
                 "Sarr A." : "Ballottaggio Orban",
                 "Orban" : "Ballottaggio Sarr A."}
 
+#======== CALCI PIAZZATI
 piazzati = {"Krstovic":"R1-2",
             "Scamacca ":"R1-2",
             "De Ketelaere":"R1-2",
@@ -462,6 +464,7 @@ df_listone["Titolarità"] = df_listone["Nome"].map(titolari_por)
 df_listone["Titolarità"] = df_listone["Nome"].map(titolari_dif)
 df_listone["Titolarità"] = df_listone["Nome"].map(titolari_cen)
 df_listone["Titolarità"] = df_listone["Nome"].map(titolari_att)
+df_listone["Piazzati"] = df_listone["Nome"].map(piazzati)
 
 # Sostituisci NaN con "-" solo nelle colonne statistiche
 stat_cols = [c for c in df_stats.columns if c != "Nome"]
