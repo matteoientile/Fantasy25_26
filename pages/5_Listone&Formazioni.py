@@ -502,7 +502,7 @@ df_listone = df_listone.merge(df_stats, on="Nome", how="left")
 df_listone["Nuovo Arrivo"] = np.where(~df_listone["Nome"].isin(df_stats["Nome"]), "SI", "-")
 df_listone["Titolarità"] = df_listone["Nome"].map(titolari_all)
 df_listone["Piazzati"] = df_listone["Nome"].map(piazzati)
-
+df_listone["Note"] = df_listone["Nome"].map(note_all)
 # Sostituisci NaN con "-" solo nelle colonne statistiche
 stat_cols = [c for c in df_stats.columns if c != "Nome"]
 df_listone[stat_cols] = df_listone[stat_cols].fillna("-")
