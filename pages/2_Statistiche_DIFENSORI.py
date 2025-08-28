@@ -149,7 +149,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 #========================= SECTION 1: BOX PLOTS =========================
 st.header("📊 Boxplot Difensori")
-metrics = ["Mv","Fm","Gf","Ass", "Efficienza realizzativa (Gol)", "Efficienza realizzativa (Assist)","xG_per90","xA_per90", "key_passes","Tiri a partita","G + A (pts converted)",
+metrics = ["Mv","Fm","Gf","Ass", "Efficienza realizzativa (Gol)", "Efficienza realizzativa (Assist)","xG_per90","xA_per90", "key_passes","G + A (pts converted)",
            "Rc","R+","% Rigori Segnati","Minuti a partita","Amm","Amm a partita"]
 
 def add_boxplot(fig, df, col, metric):
