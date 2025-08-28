@@ -63,8 +63,6 @@ def add_metrics(df, season_label=None):
     # stats_per90
     df["Amm a partita"] = df["Amm"] / df["Pv"].replace({0: np.nan})
     df["Minuti a partita"] = df["time"] / df["games"].replace({0: np.nan})
-    df["Tiri a partita"] = df["shots"] / df["games"].replace({0: np.nan})
-    df["key_passes a partita"] = df["key_passes"] / df["games"].replace({0: np.nan})
     
     # Season label
     if season_label:
