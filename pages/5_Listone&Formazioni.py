@@ -196,7 +196,7 @@ titolari_dif = {"Scalvini" : "Ballottagio Kossounou",
                 "Frese":"Tit"}         
 
 #======== CENTROCAMPISTI                
-titolari_cen = {"Ederson D.S." : "Tit",
+titolari_cen = {"Ederson D.s." : "Tit",
                 "De Roon" : "Tit",
                 "Zalewski" : "Ballottaggio Zappacosta",
                 "Samardzic" : "Ballottaggio De Ketelaere",
@@ -261,7 +261,7 @@ titolari_cen = {"Ederson D.S." : "Tit",
                 "Pulisic" : "Tit",
                 "Loftus-Cheek" : "Ballottaggio Ricci",
                 "Ricci" : "Ballottaggio Loftus-Cheek",
-                "Zambo Anguissa" : "Tit",
+                "Franck Zambo" : "Tit",
                 "McTominay" : "Tit",
                 "De Bruyne" : "Tit",
                 "Politano" : "Ballottaggio Lang/Neres",
